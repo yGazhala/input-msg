@@ -1,0 +1,15 @@
+.form {
+  width: 360px;
+  margin: 40px auto;  
+  &-field {
+    margin-bottom: 20px;
+  }
+  &-submit {}
+  &__custom-input {
+    border: none;
+    outline: none;
+    height: 1.6rem;
+    width: 100%;
+    font-size: 13px;
+  }
+}

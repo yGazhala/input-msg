@@ -1,0 +1,24 @@
+<div *ngIf="params?.model?.errors && (params?.model?.dirty || params?.model?.touched) || params?.model?.errors && params?.form?.submitted">
+  
+  <div *ngIf="msg.required" [hidden]="!params?.model?.errors.required">
+    {{msg.required}}
+  </div>
+  <div *ngIf="msg.email" [hidden]="!params?.model?.errors.email">
+    {{msg.email}}
+  </div>
+  <div *ngIf="msg.minLength" [hidden]="!params?.model?.errors.minlength">
+    {{msg.minLength}}
+  </div>
+  <div *ngIf="msg.maxLength" [hidden]="!params?.model?.errors.maxlength">
+    {{msg.maxLength}}
+  </div>
+  <div *ngIf="msg.min" [hidden]="!params?.model?.errors.min && params?.model?.errors.min !== 0">
+    {{msg.min}}
+  </div>
+  <div *ngIf="msg.max" [hidden]="!params?.model?.errors.max && params?.model?.errors.max !== 0">
+    {{msg.max}}
+  </div>
+  <div *ngIf="msg.integer" [hidden]="!params?.model?.errors.integer">
+    {{msg.integer}}
+  </div>
+</div>

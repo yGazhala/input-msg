@@ -1,7 +1,12 @@
 {
   "name": "input-msg",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yGazhala/input-msg.git"
+  },
+  "author": "Yuri Gazhala",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -13,11 +18,13 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^4.2.4",
+    "@angular/cdk": "^2.0.0-beta.12",
     "@angular/common": "^4.2.4",
     "@angular/compiler": "^4.2.4",
     "@angular/core": "^4.2.4",
     "@angular/forms": "^4.2.4",
     "@angular/http": "^4.2.4",
+    "@angular/material": "^2.0.0-beta.12",
     "@angular/platform-browser": "^4.2.4",
     "@angular/platform-browser-dynamic": "^4.2.4",
     "@angular/router": "^4.2.4",
