@@ -4,7 +4,7 @@ import { Subject } from 'rxjs/Subject';
 import { InputMsgService } from './input-msg.service';
 import { InputValidator } from './input-validator.service';
 
-import { errMsg as inputMsg } from './types';
+import { inputMsg } from './types';
 
 @Component({
   selector: 'g-msg',
@@ -45,7 +45,7 @@ export class MsgComponent implements OnInit {
     if (!this.inputKey) {
       throw new Error('gMsg component: inputName or inputId attribute must be provided');
     }
-    const input = this.inputMsgService.get(this.inputKey);
+    const input = this.inputMsgService.getInput(this.inputKey);
     if (!input) {
       throw new Error(`gMsg component: can\t find form elem with key ${this.inputKey}`);
     }

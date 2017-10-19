@@ -6,7 +6,7 @@ import { Subject } from 'rxjs/Subject';
 import { InputMsgService } from './input-msg.service';
 import { InputValidator } from './input-validator.service';
 
-import { errMsg as inputMsg } from './types';
+import { inputMsg } from './types';
 
 @Directive({
   selector: '[gInput]',
@@ -39,18 +39,18 @@ export class InputDirective implements OnInit, OnDestroy {
     if (!this.inputKey) {
       throw new Error('gInput directive: you have to set name or id attribute');
     }
-    this.inputMsgService.init(this.inputKey);
+    this.inputMsgService.initInput(this.inputKey);
     const params = this.getParams(this.elem.nativeElement);
     this.setClass();
     setTimeout(() => {
       params.model = this.model;
       params.form = this.model.formDirective as NgForm;
-      this.inputMsgService.set(this.inputKey, params);
+      this.inputMsgService.setInput(this.inputKey, params);
     }, 0);
   }
 
   public ngOnDestroy(): void {
-    this.inputMsgService.remove(this.inputKey);
+    this.inputMsgService.removeInput(this.inputKey);
   }
 
   /**
