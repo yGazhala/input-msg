@@ -1,7 +1,7 @@
 import { Directive, ElementRef, Input, OnInit, OnDestroy } from '@angular/core';
 import { NG_VALIDATORS, AbstractControl, NgModel, NgForm } from '@angular/forms';
 
-import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { InputMsgService } from './input-msg.service';
 import { InputValidator } from './input-validator.service';
@@ -17,31 +17,56 @@ import { inputMsg } from './types';
 
 export class InputDirective implements OnInit, OnDestroy {
 
-  @Input() public name: string;
   @Input() public id: string;
+  @Input() public integer: '' | boolean;
+  @Input() public label: string;
+  // Material Design betta 11 support
+  @Input() public mdInput: '';
+  @Input() public matInput: '';
+  @Input() public max: string | number;
+  @Input() public maxlength: string | number;
+  @Input() public min: string | number;
+  @Input() public minlength: string | number;
   @Input('gInput') public model: NgModel;
-  @Input() public type: string;
-  // Custom validation params
-  @Input() public min: string;
-  @Input() public max: string;
-  @Input() public integer: string;
+  @Input() public name: string;
+  @Input() public placeholder: string;
+  @Input() public required: '' | boolean;
+  @Input() public type: inputMsg.SupportedInputType = 'text'; // default
 
+  private elem: HTMLInputElement;
+  private elemType: inputMsg.SupportedInputType | 'textArea';
   private inputKey: string;
+  private isMaterial: boolean;
+  // The current input status
+  private status: BehaviorSubject<string>;
+  private readonly supportedType = {
+    email: true,
+    password: true,
+    text: true,
+    number: true
+  };
 
   constructor(
     private inputMsgService: InputMsgService,
     private validator: InputValidator,
-    private elem: ElementRef
+    private elemRef: ElementRef
   ) { }
 
   public ngOnInit(): void {
+
+    this.elem = this.elemRef.nativeElement;
+    this.setType();
+    this.isMaterial = this.matInput === '' || this.mdInput === '';
     this.inputKey = this.name || this.id;
     if (!this.inputKey) {
-      throw new Error('gInput directive: you have to set name or id attribute');
+      throw new Error('gInput directive: it seems you forgot to set name or id attribute');
     }
+    // Continue
+    this.status = new BehaviorSubject('init');
     this.inputMsgService.initInput(this.inputKey);
-    const params = this.getParams(this.elem.nativeElement);
+    const params: inputMsg.Params = this.getParams();
     this.setClass();
+    // Wait till NgForm will be initialized
     setTimeout(() => {
       params.model = this.model;
       params.form = this.model.formDirective as NgForm;
@@ -58,67 +83,78 @@ export class InputDirective implements OnInit, OnDestroy {
    */
   public validate(control: AbstractControl): {[key: string]: any} {
 
-    if (this.type === 'email') {
+    if (this.elemType === 'email') {
       return this.validator.email(control.value);
     }
 
-    if (this.type === 'number') {
+    if (this.elemType === 'number') {
 
       if (this.integer === '') {
-          const isInvalid = this.validator.integer(control.value);
-          if (isInvalid) {
-            return isInvalid;
-          }
+        const isInvalid = this.validator.integer(control.value);
+        if (isInvalid) {
+          return isInvalid;
+        }
       }
-
-      const isNumber = this.validator.isNumber;
-
-      if (isNumber(this.min) && isNumber(this.max)) {
+      if (this.hasNumberParam('min') && this.hasNumberParam('max')) {
         const isMinInvalid = this.validator.min(control.value, + this.min);
         if (isMinInvalid) {
           return isMinInvalid;
         }
         return this.validator.max(control.value, + this.max);
       }
-
-      if (isNumber(this.min) && !isNumber(this.max)) {
+      if (this.hasNumberParam('min') && !this.hasNumberParam('max')) {
         return  this.validator.min(control.value, + this.min);
       }
-
-      if (isNumber(this.max) && !isNumber(this.min)) {
-        return this.validator.max(control.value, + this.max);
-      }
+      // only 'max' param is set
+      return this.validator.max(control.value, + this.max);
     }
   }
 
-  private getParams(elem: HTMLInputElement): inputMsg.Params {
+  private generateStatus(): void {
+
+  }
+
+  private getParams(): inputMsg.Params {
+
     const params = {
-      type: elem.type,
-      label: elem.getAttribute('mFloatLabel') || elem.getAttribute('label'),
-      isRequired: elem.hasAttribute('required')
+      type: this.elemType,
+      label: this.placeholder || this.label,
+      required: this.hasAttribute('required')
     } as inputMsg.Params;
 
-    if (elem.hasAttribute('minlength')) {
-      params.minLengthValue = elem.minLength;
+    if (this.hasNumberParam('minlength')) {
+      params.minLength = + this.minlength;
     }
-    if (elem.hasAttribute('maxlength')) {
-      params.maxLengthValue = elem.maxLength;
+    if (this.hasNumberParam('maxlength')) {
+      params.maxLength = + this.maxlength;
     }
-    if (this.min) {
-      params.minValue = + this.min;
+    if (this.hasNumberParam('min')) {
+      params.min = + this.min;
     }
-    if (this.max) {
-      params.maxValue = + this.max;
+    if (this.hasNumberParam('max')) {
+      params.max = + this.max;
     }
-    if (this.integer === '' && this.type === 'number') {
-      params.isInteger = true;
+    if (this.hasAttribute('integer')) {
+      params.integer = true;
     }
     return params;
   }
 
-  private setClass() {
+  private hasAttribute(name: string): boolean {
+    return this[name] === '' || this[name] === true;
+  }
 
-    const input = this.elem.nativeElement as HTMLInputElement;
+  private hasNumberParam(name: string): boolean {
+    return this.validator.isNumber(this[name]);
+  }
+
+  private setClass(): void {
+
+    const input = this.elemRef.nativeElement as HTMLInputElement;
+    if (!this.isMaterial) {
+      input.classList.add('g-msg__form-field');
+      return;
+    }
     let parent: HTMLElement = input.parentElement;
 
     for (let i = 0; i < 10; i++) {
@@ -132,6 +168,30 @@ export class InputDirective implements OnInit, OnDestroy {
       }
     }
     parent.classList.add('g-msg__form-field');
+  }
+
+  private setType(): void {
+
+    if (this.elem.tagName !== 'INPUT' && this.elem.tagName !== 'TEXT-AREA') {
+      throw new Error(
+        `gInput directive: ${this.elem.tagName.toLowerCase()} elem is not supported. Consider to use only <input> or <text-area> elem.`
+      );
+    }
+    if (this.elem.tagName === 'TEXT-AREA') {
+      this.elemType = 'textArea';
+      return;
+    }
+    if (!this.supportedType[this.type]) {
+      throw new Error(
+        `gInput directive: input with type ${this.type} is not supported. Consider to use only email, text, number or password type.`
+      );
+    }
+    if (this.hasAttribute('integer') && this.type !== 'number') {
+      throw new Error(
+        `gInput directive: integer param is not compatible with ${this.type}. Use an input with number type instead.`
+      );
+    }
+    this.elemType = this.type;
   }
 
 }

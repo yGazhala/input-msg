@@ -13,28 +13,24 @@ export class InputMsgService {
     msg: {
       email: (label: string) => `Wrong ${label}`,
       integer: 'Fractional digits are forbidden',
-      max: (label: string, allowed: string | number) => `Maximum allowed ${label} is ${allowed}`,
-      min: (label: string, allowed: string | number) => `Minimum allowed ${label} is ${allowed}`,
-      maxLength: (label: string, allowed: string | number) => `Maximum ${allowed} chars length are allowed`,
-      minLength: (label: string, allowed: string | number) => `At least ${allowed} chars length are required`,
+      max: (label: string, allowed: number) => `Maximum allowed ${label} is ${allowed}`,
+      min: (label: string, allowed: number) => `Minimum allowed ${label} is ${allowed}`,
+      maxLength: (label: string, allowed: number) => `Maximum ${allowed} chars limit was reached`,
+      minLength: (label: string, allowed: number) => `At least ${allowed} chars length are required`,
       required: (label: string) => `${label} is required`
     }
   };
 
   private inputs: {
-    [key: string]: BehaviorSubject<inputMsg.Params | void>
+    [key: string]: inputMsg.Params
   } = {};
 
   public get config(): inputMsg.Config {
     return this.defaultConfig;
   }
 
-  public getInput(key: string): BehaviorSubject<inputMsg.Params | void> {
+  public getInput(key: string): inputMsg.Params {
     return this.inputs[key];
-  }
-
-  public initInput(key: string): void {
-    this.inputs[key] = new BehaviorSubject(undefined);
   }
 
   public set config(config: inputMsg.Config) {
@@ -51,14 +47,14 @@ export class InputMsgService {
   }
 
   public setInput(key: string, params: inputMsg.Params): void {
-    this.inputs[key].next(params);
+    this.inputs[key] = params;
   }
 
   public removeInput(key: string): void {
     if (!this.inputs[key]) {
       return;
     }
-    this.inputs[key].complete();
+    this.inputs[key].status.complete();
     delete this.inputs[key];
   }
 

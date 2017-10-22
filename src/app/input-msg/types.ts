@@ -4,27 +4,13 @@
  * So we decided to use .ts files for declarations until the issue will be fixed.
  * See: https://github.com/angular/angular-cli/issues/4874
  */
-import { Placeholder } from '@angular/compiler/src/i18n/i18n_ast';
-import { NgForm, NgModel } from '@angular/forms';
-import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 export declare module inputMsg {
 
-  interface Params {
-    type?: any;
-    label?: any;
-    isRequired?: boolean;
-    minLengthValue?: number;
-    maxLengthValue?: number;
-    minValue?: number;
-    maxValue?: number;
-    isInteger?: boolean;
-    model: NgModel;
-    form: NgForm;
-  }
-
+  // Message config
   interface Config {
-    position?: 'bottom-left' | 'bottom-right';
+    position?: Position;
     msg?: {
       email?: string | MsgFn;
       integer?: string | MsgFn;
@@ -36,18 +22,38 @@ export declare module inputMsg {
     };
   }
 
-  type ExtendedMsgFn = (placeholder: string, allowedValue: string | number) => string;
-
-  interface InputParams {
-    type?: any;
-    label?: any;
-    isRequired?: boolean;
-    minLengthValue?: number;
-    maxLengthValue?: number;
-    minValue?: number;
-    maxValue?: number;
-    isInteger?: boolean;
-  }
+  type ExtendedMsgFn = (placeholder: string, allowedValue: number) => string;
 
   type MsgFn = (placeholder: string) => string;
+
+  // Input params
+  interface Params {
+    email?: boolean;
+    integer?: boolean;
+    label?: string;
+    max?: number;
+    maxLength?: number;
+    min?: number;
+    minLength?: number;
+    required?: boolean;
+    status: BehaviorSubject<string>;
+    // type: SupportedInputType | 'textArea';
+  }
+
+  type Position = 'bottom-left' | 'bottom-right';
+
+  // Final messages to show
+  interface ResultMsg {
+    email?: string;
+    integer?: string;
+    max?: string;
+    maxLength?: string;
+    min?: string;
+    minLength?: string;
+    required?: string;
+  }
+
+  type SupportedInputType = 'email' | 'text' | 'password' | 'number';
+
+  type ValidationParam = 'email' | 'integer' | 'max' | 'maxLength' | 'min' | 'minLength' | 'required';
 }
