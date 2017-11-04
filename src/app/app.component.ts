@@ -10,7 +10,8 @@ export class AppComponent {
 
   public user = {
     email: '',
-    name: ''
+    name: '',
+    quantity: undefined
   };
 
   public onSubmit(form: NgForm): void {

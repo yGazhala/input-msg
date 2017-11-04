@@ -2,6 +2,7 @@ import { Directive, ElementRef, Input, OnInit, OnDestroy } from '@angular/core';
 import { NG_VALIDATORS, AbstractControl, NgModel, NgForm } from '@angular/forms';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Subscription } from 'rxjs/Subscription';
 
 import { InputMsgService } from './input-msg.service';
 import { InputValidator } from './input-validator.service';
@@ -35,16 +36,22 @@ export class InputDirective implements OnInit, OnDestroy {
 
   private elem: HTMLInputElement;
   private elemType: inputMsg.SupportedInputType | 'textArea';
+  private form: NgForm;
   private inputKey: string;
   private isMaterial: boolean;
-  // The current input status
-  private status: BehaviorSubject<string>;
+  private params = {} as inputMsg.Params;
+  private statusSubscription: {
+    modelChange: Subscription;
+    formSubmit: Subscription
+  };
   private readonly supportedType = {
     email: true,
     password: true,
     text: true,
     number: true
   };
+  // the current validation params of this input
+  private validationParams: inputMsg.ValidationParam[] = [];
 
   constructor(
     private inputMsgService: InputMsgService,
@@ -61,16 +68,13 @@ export class InputDirective implements OnInit, OnDestroy {
     if (!this.inputKey) {
       throw new Error('gInput directive: it seems you forgot to set name or id attribute');
     }
-    // Continue
-    this.status = new BehaviorSubject('init');
-    this.inputMsgService.initInput(this.inputKey);
-    const params: inputMsg.Params = this.getParams();
+    this.setParams();
+    this.inputMsgService.setInput(this.inputKey, this.params);
     this.setClass();
     // Wait till NgForm will be initialized
     setTimeout(() => {
-      params.model = this.model;
-      params.form = this.model.formDirective as NgForm;
-      this.inputMsgService.setInput(this.inputKey, params);
+      this.form = this.model.formDirective as NgForm;
+      this.statusOn();
     }, 0);
   }
 
@@ -79,7 +83,27 @@ export class InputDirective implements OnInit, OnDestroy {
   }
 
   /**
-   * Custom validation method
+   * Starts generating the input status
+   */
+  public statusOn(): void {
+    this.statusSubscription = {
+      modelChange: this.model.valueChanges.subscribe(this.generateStatus.bind(this)),
+      formSubmit: this.form.ngSubmit.subscribe(this.generateStatus.bind(this))
+    };
+  }
+
+  /**
+   * Stops generating the input status
+   */
+  public statusOff(): void {
+    this.statusSubscription.modelChange.unsubscribe();
+    this.statusSubscription.formSubmit.unsubscribe();
+  }
+
+  /**
+   * Validates the input elem
+   * if these validation params were set:
+   * 'email', 'integer', 'max', 'min'.
    */
   public validate(control: AbstractControl): {[key: string]: any} {
 
@@ -89,7 +113,7 @@ export class InputDirective implements OnInit, OnDestroy {
 
     if (this.elemType === 'number') {
 
-      if (this.integer === '') {
+      if (this.hasBoolaenParam('integer')) {
         const isInvalid = this.validator.integer(control.value);
         if (isInvalid) {
           return isInvalid;
@@ -110,37 +134,55 @@ export class InputDirective implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Generates the current input status when
+   * the model changes or the form submits
+   * (emits messages into this.params.status).
+   */
   private generateStatus(): void {
 
+    for (let i = 0; i < this.validationParams.length; i++) {
+      const errName = this.validationParams[i];
+      if (this.model.hasError(errName)) {
+        this.params.status.next(errName);
+        return;
+      }
+    }
+    if (this.model.valid) {
+      this.params.status.next('valid');
+    }
   }
 
-  private getParams(): inputMsg.Params {
+  /**
+   * Sets this.params and this.validationParams
+   */
+  private setParams(): void {
 
-    const params = {
-      type: this.elemType,
-      label: this.placeholder || this.label,
-      required: this.hasAttribute('required')
-    } as inputMsg.Params;
+    const booleanParams = ['required', 'integer'];
+    const numberParams = ['max', 'min', 'maxlength', 'minlength'];
 
-    if (this.hasNumberParam('minlength')) {
-      params.minLength = + this.minlength;
+    this.params.label = this.placeholder || this.label;
+    this.params.status = new BehaviorSubject('pristine' as inputMsg.InputStatus);
+
+    booleanParams.forEach((name: inputMsg.ValidationParam) => {
+      if (this.hasBoolaenParam(name)) {
+        this.params[name] = true;
+        this.validationParams.push(name);
+      }
+    });
+    if (this.elemType === 'email') {
+      this.params.email = true;
+      this.validationParams.push('email');
     }
-    if (this.hasNumberParam('maxlength')) {
-      params.maxLength = + this.maxlength;
-    }
-    if (this.hasNumberParam('min')) {
-      params.min = + this.min;
-    }
-    if (this.hasNumberParam('max')) {
-      params.max = + this.max;
-    }
-    if (this.hasAttribute('integer')) {
-      params.integer = true;
-    }
-    return params;
+    numberParams.forEach((name: inputMsg.ValidationParam) => {
+      if (this.hasNumberParam(name)) {
+        this.params[name] = + this[name];
+        this.validationParams.push(name);
+      }
+    });
   }
 
-  private hasAttribute(name: string): boolean {
+  private hasBoolaenParam(name: string): boolean {
     return this[name] === '' || this[name] === true;
   }
 
@@ -186,7 +228,7 @@ export class InputDirective implements OnInit, OnDestroy {
         `gInput directive: input with type ${this.type} is not supported. Consider to use only email, text, number or password type.`
       );
     }
-    if (this.hasAttribute('integer') && this.type !== 'number') {
+    if (this.hasBoolaenParam('integer') && this.type !== 'number') {
       throw new Error(
         `gInput directive: integer param is not compatible with ${this.type}. Use an input with number type instead.`
       );

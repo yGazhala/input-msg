@@ -35,10 +35,8 @@ export class MsgComponent implements OnInit {
   private inputKey: string;
   // validation params with inputMsg.MsgFn type support
   private readonly msgFnSupport = ['email', 'integer', 'required'];
-
-  private readonly validationParams: inputMsg.ValidationParam[] = [
-    'email', 'integer', 'max', 'maxLength', 'min', 'minLength', 'required'
-  ];
+  // all supported validation params
+  private validationParams: inputMsg.ValidationParam[];
 
   constructor(private inputMsgService: InputMsgService) {}
 
@@ -50,13 +48,17 @@ export class MsgComponent implements OnInit {
   public ngOnInit(): void {
 
     this.defaultConfig = this.inputMsgService.config;
+    this.validationParams = this.inputMsgService.validationParams;
     this.inputKey = this.inputName || this.inputId;
     if (!this.inputKey) {
       throw new Error('gMsg component: inputName or inputId attribute must be provided');
     }
     this.params = this.inputMsgService.getInput(this.inputKey);
+    this.params.status.subscribe((status) => {
+      console.log(status);
+    });
     if (!this.params) {
-      throw new Error(`gMsg component: can\t find the element with name or id: ${this.inputKey}`);
+      throw new Error(`gMsg component: can\'t find the element with name or id: ${this.inputKey}`);
     }
     this.validationParams.forEach((name: inputMsg.ValidationParam) => {
       this.setMsg(name);
@@ -88,6 +90,5 @@ export class MsgComponent implements OnInit {
     const expression = <inputMsg.ExtendedMsgFn | string>this[name] || defaultExpression;
     this.msg[name] = typeof expression === 'function' ? expression(this.params.label, this.params[name]as number) : expression;
   }
-
 
 }

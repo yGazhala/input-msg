@@ -16,13 +16,15 @@ export declare module inputMsg {
       integer?: string | MsgFn;
       max?: string | ExtendedMsgFn;
       min?: string | ExtendedMsgFn;
-      maxLength?: string | ExtendedMsgFn;
-      minLength?: string | ExtendedMsgFn;
+      maxlength?: string | ExtendedMsgFn;
+      minlength?: string | ExtendedMsgFn;
       required?: string | MsgFn;
     };
   }
 
   type ExtendedMsgFn = (placeholder: string, allowedValue: number) => string;
+
+  type InputStatus = 'pristine' | 'valid' | ValidationParam;
 
   type MsgFn = (placeholder: string) => string;
 
@@ -32,11 +34,11 @@ export declare module inputMsg {
     integer?: boolean;
     label?: string;
     max?: number;
-    maxLength?: number;
+    maxlength?: number;
     min?: number;
-    minLength?: number;
+    minlength?: number;
     required?: boolean;
-    status: BehaviorSubject<string>;
+    status: BehaviorSubject<InputStatus>;
     // type: SupportedInputType | 'textArea';
   }
 
@@ -47,13 +49,13 @@ export declare module inputMsg {
     email?: string;
     integer?: string;
     max?: string;
-    maxLength?: string;
+    maxlength?: string;
     min?: string;
-    minLength?: string;
+    minlength?: string;
     required?: string;
   }
 
   type SupportedInputType = 'email' | 'text' | 'password' | 'number';
 
-  type ValidationParam = 'email' | 'integer' | 'max' | 'maxLength' | 'min' | 'minLength' | 'required';
+  type ValidationParam = 'email' | 'integer' | 'max' | 'maxlength' | 'min' | 'minlength' | 'required';
 }

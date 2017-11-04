@@ -8,6 +8,13 @@ import { inputMsg } from './types';
 @Injectable()
 export class InputMsgService {
 
+  /**
+   * Supported validation params
+   */
+  public readonly validationParams: inputMsg.ValidationParam[] = [
+    'email', 'integer', 'max', 'maxlength', 'min', 'minlength', 'required'
+  ];
+
   private defaultConfig: inputMsg.Config = {
     position: 'bottom-left',
     msg: {
@@ -15,8 +22,8 @@ export class InputMsgService {
       integer: 'Fractional digits are forbidden',
       max: (label: string, allowed: number) => `Maximum allowed ${label} is ${allowed}`,
       min: (label: string, allowed: number) => `Minimum allowed ${label} is ${allowed}`,
-      maxLength: (label: string, allowed: number) => `Maximum ${allowed} chars limit was reached`,
-      minLength: (label: string, allowed: number) => `At least ${allowed} chars length are required`,
+      maxlength: (label: string, allowed: number) => `Maximum ${allowed} chars limit was reached`,
+      minlength: (label: string, allowed: number) => `At least ${allowed} chars length are required`,
       required: (label: string) => `${label} is required`
     }
   };
