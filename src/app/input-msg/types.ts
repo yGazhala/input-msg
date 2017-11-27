@@ -39,7 +39,6 @@ export declare module inputMsg {
     minlength?: number;
     required?: boolean;
     status: BehaviorSubject<InputStatus>;
-    // type: SupportedInputType | 'textArea';
   }
 
   type Position = 'bottom-left' | 'bottom-right';

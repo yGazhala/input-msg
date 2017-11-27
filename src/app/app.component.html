@@ -5,27 +5,36 @@
 
   <mat-form-field class="form-field">
     <input type="text" matInput placeholder="Name"
-            [(ngModel)]="user.name" name="name" 
+            [(ngModel)]="user.name" name="userName" 
             #nameModel="ngModel" 
-            [gInput]="nameModel" required
+            [gInput]="nameModel"
+            required 
+            minlength="2"
+            maxlength="5"
       >
   </mat-form-field>
-  <g-msg inputName="name"></g-msg>
+  <g-msg inputName="userName"></g-msg>
 
   <mat-form-field class="form-field">
-    <input type="email" matInput placeholder="Email"
-           [(ngModel)]="user.email" name="email" 
-           #emailModel="ngModel"
-           [gInput]="emailModel" required
+    <input type="email" matInput 
+           placeholder="Email"
+           [(ngModel)]="user.email" 
+           #emailModel="ngModel"  
+           name="email" 
+           [gInput]="emailModel" 
+           required
       >
   </mat-form-field>
   <g-msg inputName="email"></g-msg>
 
   <mat-form-field class="form-field">
-    <input type="number" matInput placeholder="Quantity"
-           [(ngModel)]="user.quantity" name="quantity" 
-           #quantityModel="ngModel" [gInput]="quantityModel"
-           required integer min="0" max="100" 
+    <input type="number" matInput 
+           placeholder="Quantity"
+           [(ngModel)]="user.quantity" 
+           name="quantity" 
+           #quantityModel="ngModel" 
+           [gInput]="quantityModel"
+           required integer min="1" max="100" 
       >
   </mat-form-field>
   <g-msg inputName="quantity"></g-msg>

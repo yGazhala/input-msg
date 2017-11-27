@@ -2,7 +2,9 @@ import { Directive, ElementRef, Input, OnInit, OnDestroy } from '@angular/core';
 import { NG_VALIDATORS, AbstractControl, NgModel, NgForm } from '@angular/forms';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
+import 'rxjs/add/observable/fromEvent';
 
 import { InputMsgService } from './input-msg.service';
 import { InputValidator } from './input-validator.service';
@@ -40,7 +42,13 @@ export class InputDirective implements OnInit, OnDestroy {
   private inputKey: string;
   private isMaterial: boolean;
   private params = {} as inputMsg.Params;
+  // contains true if the prevoius state was valid.
+  private prevValid: boolean;
   private statusSubscription: {
+    blur: Subscription;
+    controlStatus: Subscription;
+    // present if maxlength validation param was set
+    maxLength?: Subscription;
     modelChange: Subscription;
     formSubmit: Subscription
   };
@@ -79,25 +87,34 @@ export class InputDirective implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    this.statusOff();
     this.inputMsgService.removeInput(this.inputKey);
-  }
-
-  /**
-   * Starts generating the input status
-   */
-  public statusOn(): void {
-    this.statusSubscription = {
-      modelChange: this.model.valueChanges.subscribe(this.generateStatus.bind(this)),
-      formSubmit: this.form.ngSubmit.subscribe(this.generateStatus.bind(this))
-    };
   }
 
   /**
    * Stops generating the input status
    */
   public statusOff(): void {
-    this.statusSubscription.modelChange.unsubscribe();
-    this.statusSubscription.formSubmit.unsubscribe();
+
+    Object.keys(this.statusSubscription).forEach(key => {
+      this.statusSubscription[key].unsubscribe();
+    });
+  }
+
+  /**
+   * Starts generating the input status
+   */
+  public statusOn(): void {
+
+    this.statusSubscription = {
+      blur: Observable.fromEvent(this.elem, 'blur').subscribe(this.onError.bind(this)),
+      controlStatus: this.model.statusChanges.subscribe(this.onControlStatusChange.bind(this)),
+      modelChange: this.model.valueChanges.subscribe(this.onError.bind(this)),
+      formSubmit: this.form.ngSubmit.subscribe(this.hasError.bind(this))
+    };
+    if (this.hasNumberParam('maxlength')) {
+      this.statusSubscription.maxLength = this.model.valueChanges.subscribe(this.onMaxLength.bind(this));
+    }
   }
 
   /**
@@ -135,11 +152,10 @@ export class InputDirective implements OnInit, OnDestroy {
   }
 
   /**
-   * Generates the current input status when
-   * the model changes or the form submits
-   * (emits messages into this.params.status).
+   * Emits an error status message by request
+   * if the input is invalid.
    */
-  private generateStatus(): void {
+  private hasError(): void {
 
     for (let i = 0; i < this.validationParams.length; i++) {
       const errName = this.validationParams[i];
@@ -148,8 +164,45 @@ export class InputDirective implements OnInit, OnDestroy {
         return;
       }
     }
-    if (this.model.valid) {
-      this.params.status.next('valid');
+  }
+
+  /**
+   * Emits 'valid' and 'pristine' status.
+   */
+  private onControlStatusChange(status: string): void {
+
+    switch (status) {
+      case 'INVALID':
+        this.prevValid = false;
+        break;
+      case 'VALID':
+        if (!this.prevValid) {
+          this.params.status.next('valid');
+        }
+        this.prevValid = true;
+        break;
+      case 'PRISTINE':
+        this.params.status.next('pristine');
+        break;
+      default:
+        return;
+    }
+  }
+
+  /**
+   * Emits an error status message if the input
+   * has been touched and it is invalid.
+   */
+  private onError(): void {
+    if (this.model.touched || this.form.submitted) {
+      this.hasError();
+    }
+  }
+
+  private onMaxLength(): void {
+
+    if (this.model.value.length === + this.maxlength) {
+      this.params.status.next('maxlength');
     }
   }
 
