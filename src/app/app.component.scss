@@ -1,15 +1,41 @@
+.content {
+  margin: 40px;
+  display: flex;
+  justify-content: space-between;
+}
+.left-column {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+}
+.right-column {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+}
 .form {
-  width: 360px;
-  margin: 40px auto;  
-  &-field {
-    margin-bottom: 20px;
+  // width: 360px;
+  h2 {
+    margin-bottom: 40px;
   }
-  &-submit { margin-top: 10px; }
-  &__custom-input {
-    border: none;
-    outline: none;
-    height: 1.6rem;
-    width: 100%;
-    font-size: 13px;
+  &-field-wrap {
+    margin-bottom: 30px;
+  } 
+  &-field-desc {
+    color: #3f51b5;
+    font-size: 14px;
   }
+  &-footer {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+}
+.template-sample {
+  background-color: #23241f;
+  color: white;
+}
+.tag {
+  color: lightblue;
 }

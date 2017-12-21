@@ -6,6 +6,12 @@ import { NgModule } from '@angular/core';
 
 import { MatInputModule, MatButtonModule } from '@angular/material';
 
+/**
+ * Highlights code snippets in html
+ * @see https://www.npmjs.com/package/angular2-highlight-js
+ */
+import { HighlightJsModule } from 'angular2-highlight-js';
+
 import { InputMsgModule } from './input-msg/input-msg.module';
 
 import { AppComponent } from './app.component';
@@ -16,6 +22,7 @@ import { AppComponent } from './app.component';
     BrowserModule,
     CommonModule,
     FormsModule,
+    HighlightJsModule,
     InputMsgModule,
     MatInputModule,
     MatButtonModule
