@@ -1,174 +1,121 @@
 <section class="content">
 
   <section class="left-column">
-
-    <form class="form" #form="ngForm" novalidate
-      (ngSubmit)="onSubmit(form)"
-      >
-      <h2>Demo Form</h2>
-      
-      <div class="form-field-wrap">
-        <p class="form-field-desc">
-          1) required field with length validation (min = 2, max = 5).
-        </p>
-        
-        <mat-form-field>
-          <input type="text" matInput placeholder="Name"
-                  [(ngModel)]="data.name" name="userName" 
-                  #nameModel="ngModel" 
-                  [gInput]="nameModel"
-                  required 
-                  minlength="2"
-                  maxlength="5"
-            >
-        </mat-form-field>
-        <g-msg inputName="userName"></g-msg>
-      </div>
-      
-      <div class="form-field-wrap">
-        <p class="form-field-desc">
-          2) required field with email validation
-        </p>
-
-        <mat-form-field>
-          <input type="email" matInput 
-                placeholder="Email"
-                [(ngModel)]="data.email" 
-                #emailModel="ngModel"  
-                name="email" 
-                [gInput]="emailModel" 
-                required
-            >
-        </mat-form-field>
-        <g-msg inputName="email"></g-msg>
-      </div>
-      
-      <div class="form-field-wrap">
-        <p class="form-field-desc">
-          3) required field with integer and range validation <br>(min = 1, max = 100).
-        </p>
-        
-        <mat-form-field>
-          <input type="number" matInput 
-                placeholder="Quantity"
-                [(ngModel)]="data.quantity" 
-                name="quantity" 
-                #quantityModel="ngModel" 
-                [gInput]="quantityModel"
-                required integer min="1" max="100" 
-            >
-        </mat-form-field>
-        <g-msg inputName="quantity"></g-msg>
-      </div>
-
-      <div class="form-footer">
-        <button type="submit" 
-          mat-raised-button color="primary" 
-          >Submit
-        </button>
-      </div>
-    </form>
-
+    <g-demo></g-demo>
   </section>
 
   <section class="right-column">
 
-    <h2>.html</h2>
-    <div class="template-sample">
-      <pre>
-        <span class="tag">&lt;form</span> novalidate class="form" #form="ngForm" (ngSubmit)="onSubmit(form)"<span class="tag">&gt;</span>
-        
-          <span class="tag">&lt;h2&gt;</span>Demo Form<span class="tag">&lt;/h2&gt;</span>
-          
-          &lt;div class="form-field-wrap"&gt;
-        
-            &lt;p class="form-field-desc"&gt;
-              1) required field with length validation (min = 2, max = 5).
-            &lt;/p&gt;
-            
-            &lt;mat-form-field&gt;
-              &lt;input type="text" 
-                matInput 
-                placeholder="Name"
-                name="userName"
-                [(ngModel)]="data.name"  
-                #nameModel="ngModel" 
-                [gInput]="nameModel"
-                required 
-                minlength="2"
-                maxlength="5"
-                &gt;
-            &lt;/mat-form-field&gt;
-        
-            &lt;g-msg inputName="userName"&gt;&lt;/g-msg&gt;
-          
-          &lt;/div&gt;
-          
-          &lt;div class="form-field-wrap"&gt;
-        
-            &lt;p class="form-field-desc"&gt;
-              2) required field with email validation
-            &lt;/p&gt;
-        
-            &lt;mat-form-field&gt;
-              &lt;input type="email" 
-                matInput 
-                placeholder="Email"
-                [(ngModel)]="data.email" 
-                #emailModel="ngModel"  
-                name="email" 
-                [gInput]="emailModel" 
-                required
-                &gt;
-            &lt;/mat-form-field&gt;
-        
-            &lt;g-msg inputName="email"&gt;&lt;/g-msg&gt;
-        
-          &lt;/div&gt;
-          
-          &lt;div class="form-field-wrap"&gt;
-        
-            &lt;p class="form-field-desc"&gt;
-              3) required field with integer and range validation (min = 1, max = 100).
-            &lt;/p&gt;
-            
-            &lt;mat-form-field&gt;
-              &lt;input type="number" 
-                matInput 
-                placeholder="Quantity"
-                [(ngModel)]="data.quantity" 
-                name="quantity" 
-                #quantityModel="ngModel" 
-                [gInput]="quantityModel"
-                required integer 
-                min="1" max="100" 
-                &gt;
-            &lt;/mat-form-field&gt;
-        
-            &lt;g-msg inputName="quantity"&gt;&lt;/g-msg&gt;
-          
-          &lt;/div&gt;
-        
-          &lt;div class="form-footer"&gt;
-        
-            &lt;button mat-raised-button type="submit" color="primary" &gt;
-              Submit
-            &lt;/button&gt;
-        
-          &lt;/div&gt;
-        
-        &lt;/form&gt;
-      </pre>
-    </div>
+    <mat-tab-group>
 
-    <h2>.ts</h2>
-    <div class="component-sample" 
-      [innerHTML]="componentSample" 
-      highlight-js-content=".highlight"
-      >
-    </div>
+      <mat-tab label="HTML">
+        <pre class="html html-sample">
+          <code>
+            &lt;form novalidate class="form" #form="ngForm" (ngSubmit)="onSubmit(form)"&gt;
+              
+              &lt;h2&gt;Demo Form&lt;/h2&gt;
+                
+              &lt;div class="form-field-wrap"&gt;
+            
+                &lt;p class="form-field-desc"&gt;
+                  1) required field with length validation (min = 2, max = 5).
+                &lt;/p&gt;
+                
+                &lt;mat-form-field&gt;
+                  &lt;input type="text" 
+                    matInput 
+                    placeholder="Name"
+                    name="userName"
+                    [(ngModel)]="data.name"  
+                    #nameModel="ngModel" 
+                    [gInput]="nameModel"
+                    required 
+                    minlength="2"
+                    maxlength="5"
+                    &gt;
+                &lt;/mat-form-field&gt;
+            
+                &lt;g-msg inputName="userName"&gt;&lt;/g-msg&gt;
+              
+              &lt;/div&gt;
+                
+              &lt;div class="form-field-wrap"&gt;
+              
+                &lt;p class="form-field-desc"&gt;
+                  2) required field with email validation
+                &lt;/p&gt;
+              
+                &lt;mat-form-field&gt;
+                  &lt;input type="email" 
+                    matInput 
+                    placeholder="Email"
+                    [(ngModel)]="data.email" 
+                    #emailModel="ngModel"  
+                    name="email" 
+                    [gInput]="emailModel" 
+                    required
+                    &gt;
+                &lt;/mat-form-field&gt;
+              
+                &lt;g-msg inputName="email"&gt;&lt;/g-msg&gt;
+              
+              &lt;/div&gt;
+                
+              &lt;div class="form-field-wrap"&gt;
+              
+                &lt;p class="form-field-desc"&gt;
+                  3) required field with integer and range validation (min = 1, max = 100).
+                &lt;/p&gt;
+                  
+                &lt;mat-form-field&gt;
+                  &lt;input type="number" 
+                    matInput 
+                    placeholder="Quantity"
+                    [(ngModel)]="data.quantity" 
+                    name="quantity" 
+                    #quantityModel="ngModel" 
+                    [gInput]="quantityModel"
+                    required integer 
+                    min="1" max="100" 
+                    &gt;
+                &lt;/mat-form-field&gt;
+              
+                &lt;g-msg inputName="quantity"&gt;&lt;/g-msg&gt;
+                
+              &lt;/div&gt;
+              
+              &lt;div class="form-footer"&gt;
+              
+                &lt;button mat-raised-button type="submit" color="primary"&gt;
+                  Submit
+                &lt;/button&gt;
+              
+              &lt;/div&gt;
+              
+            &lt;/form&gt;
+          </code>
+        </pre>
+      </mat-tab>
+
+      <mat-tab label="TS">
+        <div class="sample" 
+          [innerHTML]="componentSample" 
+          highlight-js-content=".highlight"
+          >
+        </div>
+      </mat-tab>
+
+      <mat-tab label="SCSS">
+        <div class="sample" 
+          [innerHTML]="styleSample" 
+          highlight-js-content=".highlight"
+          >
+        </div>
+      </mat-tab>
   
+    </mat-tab-group>
+    
   </section>
-  
+
 </section>
 

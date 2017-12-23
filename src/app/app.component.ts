@@ -1,59 +1,23 @@
-import { Component, OnInit } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { NgForm } from '@angular/forms';
+import { Component, AfterViewInit, ElementRef } from '@angular/core';
+
+declare const hljs: any;
+
+import { demoComponent, demoScss } from './demo/code-samle';
 
 @Component({
   selector: 'g-app',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements AfterViewInit {
 
-  public data = {
-    email: '',
-    name: '',
-    quantity: undefined
-  };
+  public readonly componentSample: string = demoComponent;
+  public readonly styleSample: string = demoScss;
 
-  public readonly componentSample = `
-    <pre>
-      <code class="typescript highlight">
-      import { Component } from '@angular/core';
-      import { NgForm } from '@angular/forms';
+  constructor(private elem: ElementRef) { }
 
-      @Component({
-        selector: 'g-app',
-        templateUrl: './app.component.html',
-        styleUrls: ['./app.component.scss']
-      })
-      export class AppComponent {
-
-        public data = {
-          email: '',
-          name: '',
-          quantity: undefined
-        };
-
-        public onSubmit(form: NgForm): void {
-          if (form.invalid) {
-            return;
-          }
-          console.log(this.data);
-        }
-      }
-      </code>
-    </pre>`;
-
-  constructor(private sanitizer: DomSanitizer) { }
-
-  public ngOnInit(): void {
-  }
-
-  public onSubmit(form: NgForm): void {
-    if (form.invalid) {
-      return;
-    }
-    console.log(this.data);
+  public ngAfterViewInit(): void {
+    hljs.highlightBlock(this.elem.nativeElement.querySelector('.html'));
   }
 
 }

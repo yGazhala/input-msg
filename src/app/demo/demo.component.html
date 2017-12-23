@@ -1,0 +1,66 @@
+<form class="form" #form="ngForm" novalidate
+  (ngSubmit)="onSubmit(form)"
+  >
+  <h2>Demo Form</h2>
+  
+  <div class="form-field-wrap">
+    <p class="form-field-desc">
+      1) required field with length validation (min = 2, max = 5).
+    </p>
+    
+    <mat-form-field>
+      <input type="text" matInput placeholder="Name"
+              [(ngModel)]="data.name" name="userName" 
+              #nameModel="ngModel" 
+              [gInput]="nameModel"
+              required 
+              minlength="2"
+              maxlength="5"
+        >
+    </mat-form-field>
+    <g-msg inputName="userName"></g-msg>
+  </div>
+  
+  <div class="form-field-wrap">
+    <p class="form-field-desc">
+      2) required field with email validation
+    </p>
+
+    <mat-form-field>
+      <input type="email" matInput 
+            placeholder="Email"
+            [(ngModel)]="data.email" 
+            #emailModel="ngModel"  
+            name="email" 
+            [gInput]="emailModel" 
+            required
+        >
+    </mat-form-field>
+    <g-msg inputName="email"></g-msg>
+  </div>
+  
+  <div class="form-field-wrap">
+    <p class="form-field-desc">
+      3) required field with integer and range validation <br>(min = 1, max = 100).
+    </p>
+    
+    <mat-form-field>
+      <input type="number" matInput 
+            placeholder="Quantity"
+            [(ngModel)]="data.quantity" 
+            name="quantity" 
+            #quantityModel="ngModel" 
+            [gInput]="quantityModel"
+            required integer min="1" max="100" 
+        >
+    </mat-form-field>
+    <g-msg inputName="quantity"></g-msg>
+  </div>
+
+  <div class="form-footer">
+    <button type="submit" 
+      mat-raised-button color="primary" 
+      >Submit
+    </button>
+  </div>
+</form>

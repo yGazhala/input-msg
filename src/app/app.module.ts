@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 
-import { MatInputModule, MatButtonModule } from '@angular/material';
+import { MatButtonModule, MatInputModule, MatTabsModule } from '@angular/material';
 
 /**
  * Highlights code snippets in html
@@ -15,6 +15,7 @@ import { HighlightJsModule } from 'angular2-highlight-js';
 import { InputMsgModule } from './input-msg/input-msg.module';
 
 import { AppComponent } from './app.component';
+import { DemoComponent } from './demo/demo.component';
 
 @NgModule({
   imports: [
@@ -24,13 +25,15 @@ import { AppComponent } from './app.component';
     FormsModule,
     HighlightJsModule,
     InputMsgModule,
+    MatButtonModule,
     MatInputModule,
-    MatButtonModule
+    MatTabsModule
   ],
   declarations: [
-    AppComponent
+    AppComponent,
+    DemoComponent
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [ AppComponent ]
 })
 export class AppModule { }
