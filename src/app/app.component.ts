@@ -1,23 +1,25 @@
-import { Component, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
-declare const hljs: any;
-
-import { demoComponent, demoScss } from './demo/code-samle';
+import { demoComponent, demoTemplate, demoScss } from './demo/code-samle';
 
 @Component({
   selector: 'g-app',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements OnInit {
 
-  public readonly componentSample: string = demoComponent;
-  public readonly styleSample: string = demoScss;
+  public componentSample: string;
+  public styleSample: string;
+  public templateSample: SafeHtml;
 
-  constructor(private elem: ElementRef) { }
+  constructor(private sanitizer: DomSanitizer) { }
 
-  public ngAfterViewInit(): void {
-    hljs.highlightBlock(this.elem.nativeElement.querySelector('.html'));
+  public ngOnInit(): void {
+    this.componentSample = demoComponent;
+    this.styleSample = demoScss;
+    this.templateSample = this.sanitizer.bypassSecurityTrustHtml(demoTemplate);
   }
 
 }
