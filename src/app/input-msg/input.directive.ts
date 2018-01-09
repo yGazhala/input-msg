@@ -91,8 +91,8 @@ export class InputDirective implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.statusOff();
-    this.params.status.unsubscribe();
     this.inputMsgService.removeInput(this.inputKey);
+    this.params.status.unsubscribe();
   }
 
   /**
