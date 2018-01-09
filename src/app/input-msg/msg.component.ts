@@ -50,7 +50,8 @@ export class MsgComponent implements OnInit {
     return {
       'g-msg_pos_bottom-left': position === 'bottom-left',
       'g-msg_pos_bottom-right': position === 'bottom-right',
-      'g-msg_color_tooltip': this.status === 'maxlength'
+      'g-msg_color_tooltip': this.status === 'maxlength',
+      'g-msg_material': this.params.material
     };
   }
 

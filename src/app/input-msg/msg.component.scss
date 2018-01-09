@@ -1,21 +1,28 @@
-g-msg {
-  display: block;
-  color: #f44336; // $mat-red 500
-  font-size: 12px;
-  margin-top: -33px; // -29
-  min-height: 20px;
-  .g-msg_pos_bottom-left {
+.g-msg {
+  &__mat-form-field {
+    margin-bottom: 16px;
+    width: 100%;
+  }
+  &__container {
+    display: block;
+    color: #f44336; // $mat-red 500
+    font-size: 12px;
+    min-height: 20px;
+    margin-top: 3px;
+  }
+  // This class is set automatically only if 
+  // there is mat-form-field element
+  &_material {
+    margin-top: -33px;
+  }
+  &_pos_bottom-left {
     text-align: left;
   }
-  .g-msg_pos_bottom-right {
+  &_pos_bottom-right {
     text-align: right;
   }
-  .g-msg_color_tooltip {
+  &_color_tooltip {
     color: grey;
   }
 }
 
-.g-msg__form-field {
-  margin-bottom: 16px;
-  width: 100%;
-}

@@ -39,6 +39,8 @@ export declare module inputMsg {
     minlength?: number;
     required?: boolean;
     status: BehaviorSubject<InputStatus>;
+    // shows whether there is a Material Design input or not
+    material: boolean;
   }
 
   type Position = 'bottom-left' | 'bottom-right';

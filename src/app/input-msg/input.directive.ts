@@ -60,6 +60,8 @@ export class InputDirective implements OnInit, OnDestroy {
   };
   // the current validation params of this input
   private validationParams: inputMsg.ValidationParam[] = [];
+  // the list of error statuses to add 'g-input_invalid' class
+  private readonly errStatuses = ['email', 'integer', 'max', 'min', 'minlength', 'required'];
 
   constructor(
     private inputMsgService: InputMsgService,
@@ -83,11 +85,13 @@ export class InputDirective implements OnInit, OnDestroy {
     setTimeout(() => {
       this.form = this.model.formDirective as NgForm;
       this.statusOn();
+      this.params.status.subscribe(this.toggleClassOnStatusChange.bind(this));
     }, 0);
   }
 
   public ngOnDestroy(): void {
     this.statusOff();
+    this.params.status.unsubscribe();
     this.inputMsgService.removeInput(this.inputKey);
   }
 
@@ -122,7 +126,7 @@ export class InputDirective implements OnInit, OnDestroy {
    * if these validation params were set:
    * 'email', 'integer', 'max', 'min'.
    */
-  public validate(control: AbstractControl): {[key: string]: any} {
+  public validate(control: AbstractControl): { [key: string]: any } {
 
     if (this.elemType === 'email') {
       return this.validator.email(control.value);
@@ -144,7 +148,7 @@ export class InputDirective implements OnInit, OnDestroy {
         return this.validator.max(control.value, + this.max);
       }
       if (this.hasNumberParam('min') && !this.hasNumberParam('max')) {
-        return  this.validator.min(control.value, + this.min);
+        return this.validator.min(control.value, + this.min);
       }
       // only 'max' param is set
       return this.validator.max(control.value, + this.max);
@@ -215,6 +219,7 @@ export class InputDirective implements OnInit, OnDestroy {
     const numberParams = ['max', 'min', 'maxlength', 'minlength'];
 
     this.params.label = this.placeholder || this.label;
+    this.params.material = this.isMaterial;
     this.params.status = new BehaviorSubject('pristine' as inputMsg.InputStatus);
 
     booleanParams.forEach((name: inputMsg.ValidationParam) => {
@@ -245,16 +250,15 @@ export class InputDirective implements OnInit, OnDestroy {
 
   private setClass(): void {
 
-    const input = this.elemRef.nativeElement as HTMLInputElement;
     if (!this.isMaterial) {
-      input.classList.add('g-msg__form-field');
       return;
     }
+    const input = this.elemRef.nativeElement as HTMLInputElement;
     let parent: HTMLElement = input.parentElement;
 
     for (let i = 0; i < 10; i++) {
       if (parent.tagName === 'MAT-FORM-FIELD' ||
-          parent.tagName === 'MD-FORM-FIELD') {
+        parent.tagName === 'MD-FORM-FIELD') {
         break;
       }
       parent = parent.parentElement;
@@ -262,7 +266,7 @@ export class InputDirective implements OnInit, OnDestroy {
         throw new Error('gInput directive: Can\'t find parent <mat-form-field> elem');
       }
     }
-    parent.classList.add('g-msg__form-field');
+    parent.classList.add('g-msg__mat-form-field');
   }
 
   private setType(): void {
@@ -289,4 +293,14 @@ export class InputDirective implements OnInit, OnDestroy {
     this.elemType = this.type;
   }
 
+  /**
+   * Adds/removes '.g-input_invalid' class to the input
+   */
+  private toggleClassOnStatusChange(status: inputMsg.InputStatus): void {
+    if (this.errStatuses.indexOf(status) !== -1) {
+      this.elem.classList.add('g-input_invalid');
+    } else {
+      this.elem.classList.remove('g-input_invalid');
+    }
+  }
 }

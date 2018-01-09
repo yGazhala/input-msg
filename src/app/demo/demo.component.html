@@ -57,6 +57,28 @@
     <g-msg inputName="quantity"></g-msg>
   </div>
 
+  <div class="form-field-wrap">
+
+    <p class="form-field-desc">
+      4) Custom input with required and length validation <br> (min = 4, max = 6).
+    </p>
+
+    <input class="custom-input"
+           type="text"
+           placeholder="Zip Code"
+           name="zipCode"
+           [(ngModel)]="data.zipCode" 
+           #zipCodeModel="ngModel" 
+           [gInput]="zipCodeModel"
+           required 
+           minlength="4"
+           maxlength="6"
+      >
+
+    <g-msg inputName="zipCode"></g-msg>
+
+  </div>
+
   <div class="form-footer">
     <button type="submit" 
       mat-raised-button color="primary" 

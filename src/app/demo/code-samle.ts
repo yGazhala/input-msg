@@ -12,13 +12,15 @@ let template = `
       </p>
 
       <mat-form-field>
-        <input type="text" matInput placeholder="Name"
-                [(ngModel)]="data.name" name="userName"
-                #nameModel="ngModel"
-                [gInput]="nameModel"
-                required
-                minlength="2"
-                maxlength="5"
+        <input type="text"
+               matInput
+               placeholder="Name"
+               [(ngModel)]="data.name" name="userName"
+               #nameModel="ngModel"
+               [gInput]="nameModel"
+               required
+               minlength="2"
+               maxlength="5"
           >
       </mat-form-field>
 
@@ -33,13 +35,14 @@ let template = `
       </p>
 
       <mat-form-field>
-        <input type="email" matInput
-              placeholder="Email"
-              [(ngModel)]="data.email"
-              #emailModel="ngModel"
-              name="email"
-              [gInput]="emailModel"
-              required
+        <input type="email"
+               matInput
+               placeholder="Email"
+               [(ngModel)]="data.email"
+               #emailModel="ngModel"
+               name="email"
+               [gInput]="emailModel"
+               required
           >
       </mat-form-field>
 
@@ -54,17 +57,41 @@ let template = `
       </p>
 
       <mat-form-field>
-        <input type="number" matInput
-              placeholder="Quantity"
-              [(ngModel)]="data.quantity"
-              name="quantity"
-              #quantityModel="ngModel"
-              [gInput]="quantityModel"
-              required integer min="1" max="100"
+        <input type="number"
+               matInput
+               placeholder="Quantity"
+               [(ngModel)]="data.quantity"
+               name="quantity"
+               #quantityModel="ngModel"
+               [gInput]="quantityModel"
+               required integer
+               min="1" max="100"
           >
       </mat-form-field>
 
       <g-msg inputName="quantity"></g-msg>
+
+    </div>
+
+    <div class="form-field-wrap">
+
+      <p class="form-field-desc">
+        4) Custom input with required and length validation (min = 4, max = 6).
+      </p>
+
+      <input class="custom-input"
+             type="text"
+             placeholder="Zip Code"
+             name="zipCode"
+             [(ngModel)]="data.zipCode"
+             #zipCodeModel="ngModel"
+             [gInput]="zipCodeModel"
+             required
+             minlength="4"
+             maxlength="6"
+        >
+
+      <g-msg inputName="zipCode"></g-msg>
 
     </div>
 
@@ -101,7 +128,8 @@ export const demoComponent = `
         public data = {
           email: '',
           name: '',
-          quantity: undefined
+          quantity: undefined,
+          zipCode: ''
         };
 
         public onSubmit(form: NgForm): void {
@@ -132,6 +160,17 @@ export const demoScss = `
           margin-top: 10px;
           display: flex;
           justify-content: flex-end;
+        }
+      }
+      .custom-input {
+        width: 100%;
+        padding: 3px 5px;
+        border: 1px solid #3f51b5;
+        border-radius: 4px;
+        outline: none;
+        &.g-input_invalid {
+          border-color: #f44336;
+          transition: border-color 300ms ease-in;
         }
       }
     </code>
