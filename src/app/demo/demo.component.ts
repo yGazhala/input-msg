@@ -12,7 +12,8 @@ export class DemoComponent {
     email: '',
     name: '',
     quantity: undefined,
-    zipCode: ''
+    zipCode: '',
+    address: ''
   };
 
   public onSubmit(form: NgForm): void {
@@ -25,7 +26,8 @@ export class DemoComponent {
         name: ${this.data.name},
         email: ${this.data.email},
         quantity: ${this.data.quantity},
-        zipCode: ${this.data.zipCode}
+        zipCode: ${this.data.zipCode},
+        address: ${this.data.address}
     `);
   }
 

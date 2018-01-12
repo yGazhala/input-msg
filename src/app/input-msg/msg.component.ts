@@ -59,7 +59,7 @@ export class MsgComponent implements OnInit {
 
     this.defaultConfig = this.inputMsgService.config;
     this.validationParams = this.inputMsgService.validationParams;
-    this.inputKey = this.inputName || this.inputId;
+    this.inputKey = this.inputId || this.inputName;
     if (!this.inputKey) {
       throw new Error('gMsg component: inputName or inputId attribute must be provided');
     }

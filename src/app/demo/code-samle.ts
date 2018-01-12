@@ -95,6 +95,33 @@ let template = `
 
     </div>
 
+    <div class="form-field-wrap">
+
+      <p class="form-field-desc">
+        5) Custom input with label. Validation params: required and length (min = 4, max = 10).
+      </p>
+
+      <label for="addressId" gLabel class="custom-input-label">
+        Address
+      </label>
+
+      <input class="custom-input"
+            type="text"
+            label="Address"
+            name="address"
+            id="addressId"
+            [(ngModel)]="data.address"
+            #addressModel="ngModel"
+            [gInput]="addressModel"
+            required
+            minlength="4"
+            maxlength="10"
+        >
+
+      <g-msg inputId="addressId"></g-msg>
+
+    </div>
+
     <div class="form-footer">
 
       <button type="submit" mat-raised-button color="primary">
@@ -129,7 +156,8 @@ export const demoComponent = `
           email: '',
           name: '',
           quantity: undefined,
-          zipCode: ''
+          zipCode: '',
+          address: ''
         };
 
         public onSubmit(form: NgForm): void {
@@ -168,9 +196,16 @@ export const demoScss = `
         border: 1px solid #3f51b5;
         border-radius: 4px;
         outline: none;
+        transition: border-color 300ms ease;
         &.g-input_invalid {
           border-color: #f44336;
-          transition: border-color 300ms ease-in;
+        }
+      }
+      .custom-input-label {
+        font-size: 12px;
+        color: #3f51b5;
+        &.g-input_invalid {
+          color: #f44336;
         }
       }
     </code>

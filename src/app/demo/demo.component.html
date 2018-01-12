@@ -79,6 +79,34 @@
 
   </div>
 
+  <div class="form-field-wrap">
+
+    <p class="form-field-desc">
+      5) Custom input with label. <br> Validation params: required and length (min = 4, max = 10).
+    </p>
+
+    <label class="custom-input-label" 
+      for="addressId" gLabel 
+      >Address
+    </label>
+
+    <input class="custom-input"
+           type="text"
+           label="Address"
+           name="address"
+           id="addressId"
+           [(ngModel)]="data.address" 
+           #addressModel="ngModel" 
+           [gInput]="addressModel"
+           required 
+           minlength="4"
+           maxlength="10"
+      >
+
+    <g-msg inputId="addressId"></g-msg>
+
+  </div>
+
   <div class="form-footer">
     <button type="submit" 
       mat-raised-button color="primary" 

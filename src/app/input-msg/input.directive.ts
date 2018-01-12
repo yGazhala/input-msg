@@ -60,8 +60,6 @@ export class InputDirective implements OnInit, OnDestroy {
   };
   // the current validation params of this input
   private validationParams: inputMsg.ValidationParam[] = [];
-  // the list of error statuses to add 'g-input_invalid' class
-  private readonly errStatuses = ['email', 'integer', 'max', 'min', 'minlength', 'required'];
 
   constructor(
     private inputMsgService: InputMsgService,
@@ -74,7 +72,7 @@ export class InputDirective implements OnInit, OnDestroy {
     this.elem = this.elemRef.nativeElement;
     this.setType();
     this.isMaterial = this.matInput === '' || this.mdInput === '';
-    this.inputKey = this.name || this.id;
+    this.inputKey =  this.id || this.name;
     if (!this.inputKey) {
       throw new Error('gInput directive: it seems you forgot to set name or id attribute');
     }
@@ -85,14 +83,14 @@ export class InputDirective implements OnInit, OnDestroy {
     setTimeout(() => {
       this.form = this.model.formDirective as NgForm;
       this.statusOn();
-      this.params.status.subscribe(this.toggleClassOnStatusChange.bind(this));
+      this.params.valid.subscribe(this.toggleClassOnValidChange.bind(this));
     }, 0);
   }
 
   public ngOnDestroy(): void {
     this.statusOff();
     this.inputMsgService.removeInput(this.inputKey);
-    this.params.status.unsubscribe();
+    this.params.valid.unsubscribe();
   }
 
   /**
@@ -165,6 +163,7 @@ export class InputDirective implements OnInit, OnDestroy {
       const errName = this.validationParams[i];
       if (this.model.hasError(errName)) {
         this.params.status.next(errName);
+        this.params.valid.next(false);
         return;
       }
     }
@@ -182,11 +181,13 @@ export class InputDirective implements OnInit, OnDestroy {
       case 'VALID':
         if (!this.prevValid) {
           this.params.status.next('valid');
+          this.params.valid.next(true);
         }
         this.prevValid = true;
         break;
       case 'PRISTINE':
         this.params.status.next('pristine');
+        this.params.valid.next(true);
         break;
       default:
         return;
@@ -221,6 +222,7 @@ export class InputDirective implements OnInit, OnDestroy {
     this.params.label = this.placeholder || this.label;
     this.params.material = this.isMaterial;
     this.params.status = new BehaviorSubject('pristine' as inputMsg.InputStatus);
+    this.params.valid = new BehaviorSubject(true);
 
     booleanParams.forEach((name: inputMsg.ValidationParam) => {
       if (this.hasBoolaenParam(name)) {
@@ -296,11 +298,11 @@ export class InputDirective implements OnInit, OnDestroy {
   /**
    * Adds/removes '.g-input_invalid' class to the input
    */
-  private toggleClassOnStatusChange(status: inputMsg.InputStatus): void {
-    if (this.errStatuses.indexOf(status) !== -1) {
-      this.elem.classList.add('g-input_invalid');
-    } else {
+  private toggleClassOnValidChange(valid: boolean): void {
+    if (valid) {
       this.elem.classList.remove('g-input_invalid');
+    } else {
+      this.elem.classList.add('g-input_invalid');
     }
   }
 }

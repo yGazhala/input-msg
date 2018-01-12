@@ -1,6 +1,6 @@
 # InputMsgModule
 
-Provides live form input validation for Angular 2+ projects. Inspired by AngularJS ng-messages module. [Demo:](https://ygazhala.github.io/input-msg)
+Provides live form input validation for Angular 2+ projects. Inspired by AngularJS ng-messages module. [Demo](https://ygazhala.github.io/input-msg)
 
 ## Features
 
@@ -18,7 +18,7 @@ Provides live form input validation for Angular 2+ projects. Inspired by Angular
 
 2. Import `InputMsgModule` to your feature module as any other Angular module as usual.
 
-3. Inside a form, add `[gInput]` directive to an input element, then insert `<g-msg>` component to show error messages. See [Demo:](https://ygazhala.github.io/input-msg) 
+3. Inside a form, add `[gInput]` directive to an input element, then insert `<g-msg>` component to show error messages. See [Demo](https://ygazhala.github.io/input-msg) 
 
 ## Contribution
 

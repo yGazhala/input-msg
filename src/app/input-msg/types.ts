@@ -39,6 +39,7 @@ export declare module inputMsg {
     minlength?: number;
     required?: boolean;
     status: BehaviorSubject<InputStatus>;
+    valid: BehaviorSubject<boolean>;
     // shows whether there is a Material Design input or not
     material: boolean;
   }

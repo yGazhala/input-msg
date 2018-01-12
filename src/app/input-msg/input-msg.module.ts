@@ -5,8 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { InputMsgService } from './input-msg.service';
 import { InputValidator } from './input-validator.service';
 
-import { MsgComponent } from './msg.component';
 import { InputDirective } from './input.directive';
+import { LabelDirective } from './label.directive';
+import { MsgComponent } from './msg.component';
 
 
 @NgModule({
@@ -16,6 +17,7 @@ import { InputDirective } from './input.directive';
   ],
   declarations: [
     InputDirective,
+    LabelDirective,
     MsgComponent
   ],
   providers: [
@@ -24,6 +26,7 @@ import { InputDirective } from './input.directive';
   ],
   exports: [
     InputDirective,
+    LabelDirective,
     MsgComponent
   ]
 })
