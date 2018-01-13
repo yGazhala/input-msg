@@ -10,8 +10,8 @@
     min-height: 20px;
     margin-top: 3px;
   }
-  // This class is set automatically only if 
-  // there is mat-form-field element
+  // This class is set automatically only 
+  // if there is <mat-form-field> element
   &_material {
     margin-top: -33px;
   }
@@ -25,4 +25,3 @@
     color: grey;
   }
 }
-

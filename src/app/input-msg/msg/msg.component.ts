@@ -1,24 +1,41 @@
 import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
-import { Subject } from 'rxjs/Subject';
 
-import { InputMsgService } from './input-msg.service';
-import { InputValidator } from './input-validator.service';
+import { InputMsgService } from '../input-msg.service';
+import { InputStorageService } from '../input-storage.service';
 
-import { inputMsg } from './types';
+import { inputMsg } from '../types';
 
+/**
+ * Displays a message for an input element
+ * depending on its validation status.
+ */
 @Component({
   selector: 'g-msg',
   templateUrl: './msg.component.html',
   styleUrls: ['./msg.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-
 export class MsgComponent implements OnInit {
 
+  /**
+   * input id or name
+   */
+  @Input() public for: string;
+  /**
+   * DEPRECATED.
+   * Use for param instead.
+   */
   @Input() public inputId: string;
+  /**
+   * DEPRECATED.
+   * Use for param instead.
+   */
   @Input() public inputName: string;
-  // Optional params with custom messages
-  // that overwrite the default ones
+
+  /**
+   * Optional params with custom messages
+   * that overwrite the default ones
+   */
   @Input() public email: string | inputMsg.MsgFn;
   @Input() public integer: string | inputMsg.MsgFn;
   @Input() public max: string | inputMsg.ExtendedMsgFn;
@@ -28,21 +45,24 @@ export class MsgComponent implements OnInit {
   @Input() public position: inputMsg.Position;
   @Input() public required: string | inputMsg.MsgFn;
 
-  // Currently showing message
+  // Currently shown message
   public currentMsg: string;
-  // Messages to show when input status changes
-  public messages: inputMsg.ResultMsg = {};
-  public params: inputMsg.Params;
 
   private defaultConfig: inputMsg.Config;
   private inputKey: string;
+  // Messages to show when input status changes
+  private messages: inputMsg.ResultMsg = {};
   // validation params with inputMsg.MsgFn type support
   private readonly msgFnSupport = ['email', 'integer', 'required'];
+  private params: inputMsg.InputParams;
   private status: inputMsg.InputStatus;
   // all supported validation params
   private validationParams: inputMsg.ValidationParam[];
 
-  constructor(private inputMsgService: InputMsgService) {}
+  constructor(
+    private inputMsgService: InputMsgService,
+    private inputStorageService: InputStorageService
+  ) { }
 
   public getClasses(): { [name: string]: boolean } {
 
@@ -59,14 +79,17 @@ export class MsgComponent implements OnInit {
 
     this.defaultConfig = this.inputMsgService.config;
     this.validationParams = this.inputMsgService.validationParams;
-    this.inputKey = this.inputId || this.inputName;
+
+    this.inputKey = this.for || this.inputId || this.inputName;
     if (!this.inputKey) {
-      throw new Error('gMsg component: inputName or inputId attribute must be provided');
+      throw new Error('gMsg component: \'for\' parameter with the input id or name must be provided.');
     }
-    this.params = this.inputMsgService.getInput(this.inputKey);
+
+    this.params = this.inputStorageService.get(this.inputKey);
     if (!this.params) {
-      throw new Error(`gMsg component: can\'t find the element with name or id: ${this.inputKey}`);
+      throw new Error(`gMsg component: can\'t find the input element with id or name: ${this.inputKey}`);
     }
+
     // Set default or custom messages for given validation params
     this.validationParams.forEach((name: inputMsg.ValidationParam) => {
       this.setMsg(name);
@@ -94,11 +117,9 @@ export class MsgComponent implements OnInit {
     }
   }
 
-  /**
-   * Sets message text for a given validation parameter.
-   * If appropriate message expression is not provided
-   * throgh @Input() binding - the default one is used instead.
-   */
+  // Sets message text for a given validation parameter.
+  // If appropriate message expression is not provided
+  // throgh @Input() binding - the default one is used instead.
   private setMsg(name: inputMsg.ValidationParam): void {
 
     if (typeof this.params[name] === 'undefined') {

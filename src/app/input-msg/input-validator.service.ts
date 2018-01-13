@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
 
+/**
+ * Provides validation methods
+ */
 @Injectable()
 export class InputValidator {
 

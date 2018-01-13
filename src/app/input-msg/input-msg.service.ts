@@ -1,4 +1,3 @@
-import { iterateListLike } from '@angular/core/src/change_detection/change_detection_util';
 import { Injectable } from '@angular/core';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -28,16 +27,8 @@ export class InputMsgService {
     }
   };
 
-  private inputs: {
-    [key: string]: inputMsg.Params
-  } = {};
-
   public get config(): inputMsg.Config {
     return this.defaultConfig;
-  }
-
-  public getInput(key: string): inputMsg.Params {
-    return this.inputs[key];
   }
 
   public set config(config: inputMsg.Config) {
@@ -51,18 +42,6 @@ export class InputMsgService {
     Object.keys(config.msg).forEach((key: string) => {
       this.defaultConfig.msg[key] = config.msg[key];
     });
-  }
-
-  public setInput(key: string, params: inputMsg.Params): void {
-    this.inputs[key] = params;
-  }
-
-  public removeInput(key: string): void {
-    if (!this.inputs[key]) {
-      return;
-    }
-    this.inputs[key].status.complete();
-    delete this.inputs[key];
   }
 
 }

@@ -9,52 +9,62 @@
     </p>
     
     <mat-form-field>
-      <input type="text" matInput placeholder="Name"
-              [(ngModel)]="data.name" name="userName" 
-              #nameModel="ngModel" 
-              [gInput]="nameModel"
-              required 
-              minlength="2"
-              maxlength="5"
+      <input type="text"  
+             gInput matInput 
+             placeholder="Name"
+             [(ngModel)]="data.name" 
+             name="userName"
+             #nameModel="ngModel" 
+             [model]="nameModel"
+             required 
+             minlength="2"
+             maxlength="5"
         >
     </mat-form-field>
-    <g-msg inputName="userName"></g-msg>
+    <g-msg for="userName"></g-msg>
   </div>
   
   <div class="form-field-wrap">
+
     <p class="form-field-desc">
       2) required field with email validation
     </p>
 
     <mat-form-field>
-      <input type="email" matInput 
-            placeholder="Email"
-            [(ngModel)]="data.email" 
-            #emailModel="ngModel"  
-            name="email" 
-            [gInput]="emailModel" 
-            required
+      <input type="email" 
+             gInput matInput 
+             placeholder="Email"
+             name="email"
+             [(ngModel)]="data.email" 
+             #emailModel="ngModel"  
+             [model]="emailModel" 
+             required
         >
     </mat-form-field>
-    <g-msg inputName="email"></g-msg>
+    <g-msg for="email"></g-msg>
   </div>
   
   <div class="form-field-wrap">
+
     <p class="form-field-desc">
       3) required field with integer and range validation <br>(min = 1, max = 100).
     </p>
     
     <mat-form-field>
-      <input type="number" matInput 
-            placeholder="Quantity"
-            [(ngModel)]="data.quantity" 
-            name="quantity" 
-            #quantityModel="ngModel" 
-            [gInput]="quantityModel"
-            required integer min="1" max="100" 
+      <input type="number" 
+             gInput matInput
+             name="quantity"
+             placeholder="Quantity"
+             [(ngModel)]="data.quantity" 
+             #quantityModel="ngModel" 
+             [model]="quantityModel"
+             required integer 
+             min="1" max="100" 
         >
     </mat-form-field>
-    <g-msg inputName="quantity"></g-msg>
+
+    <g-msg for="quantity"></g-msg>
+
   </div>
 
   <div class="form-field-wrap">
@@ -64,18 +74,18 @@
     </p>
 
     <input class="custom-input"
-           type="text"
+           type="text" 
            placeholder="Zip Code"
-           name="zipCode"
+           gInput name="zipCode"
            [(ngModel)]="data.zipCode" 
            #zipCodeModel="ngModel" 
-           [gInput]="zipCodeModel"
+           [model]="zipCodeModel"
            required 
            minlength="4"
            maxlength="6"
       >
 
-    <g-msg inputName="zipCode"></g-msg>
+    <g-msg for="zipCode"></g-msg>
 
   </div>
 
@@ -86,31 +96,34 @@
     </p>
 
     <label class="custom-input-label" 
-      for="addressId" gLabel 
+           for="addressId" gLabel 
       >Address
     </label>
 
     <input class="custom-input"
            type="text"
+           gInput
            label="Address"
            name="address"
            id="addressId"
            [(ngModel)]="data.address" 
            #addressModel="ngModel" 
-           [gInput]="addressModel"
+           [model]="addressModel"
            required 
            minlength="4"
            maxlength="10"
       >
 
-    <g-msg inputId="addressId"></g-msg>
+    <g-msg for="addressId"></g-msg>
 
   </div>
 
   <div class="form-footer">
-    <button type="submit" 
-      mat-raised-button color="primary" 
+  
+    <button type="submit" mat-raised-button color="primary" 
       >Submit
     </button>
+
   </div>
+
 </form>

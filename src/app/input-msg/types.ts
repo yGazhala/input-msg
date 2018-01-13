@@ -24,12 +24,7 @@ export declare module inputMsg {
 
   type ExtendedMsgFn = (placeholder: string, allowedValue: number) => string;
 
-  type InputStatus = 'pristine' | 'valid' | ValidationParam;
-
-  type MsgFn = (placeholder: string) => string;
-
-  // Input params
-  interface Params {
+  interface InputParams {
     email?: boolean;
     integer?: boolean;
     label?: string;
@@ -40,9 +35,13 @@ export declare module inputMsg {
     required?: boolean;
     status: BehaviorSubject<InputStatus>;
     valid: BehaviorSubject<boolean>;
-    // shows whether there is a Material Design input or not
+    // contains true if there is a Material Design input
     material: boolean;
   }
+
+  type InputStatus = 'pristine' | 'valid' | ValidationParam;
+
+  type MsgFn = (placeholder: string) => string;
 
   type Position = 'bottom-left' | 'bottom-right';
 

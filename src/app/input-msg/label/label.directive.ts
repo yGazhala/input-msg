@@ -2,24 +2,30 @@ import { Directive, Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-import { InputMsgService } from './input-msg.service';
+import { InputStorageService } from '../input-storage.service';
 
-import { inputMsg } from './types';
+import { inputMsg } from '../types';
 
+/**
+ * Adds/removes 'g-input_invalid' css class
+ * when input status changes
+ */
 @Directive({
   selector: '[gLabel]'
 })
 export class LabelDirective implements OnInit, OnDestroy {
 
-  @Input() public for: string; // input id
-  @Input() public inputName: string;
+  /**
+   * input element id or name
+   */
+  @Input() public for: string;
 
   private elem: HTMLLabelElement;
   private valid: BehaviorSubject<boolean>;
 
   constructor(
     private elemRef: ElementRef,
-    private inputMsgService: InputMsgService
+    private inputStorageService: InputStorageService
   ) { }
 
   public ngOnDestroy(): void {
@@ -32,18 +38,17 @@ export class LabelDirective implements OnInit, OnDestroy {
 
     this.elem = this.elemRef.nativeElement;
 
-    const inputKey: string = this.for || this.inputName;
-    if (!inputKey) {
-      throw new Error('gLabel directive: it seems you forgot to set \'for\' or \'inputName\' attribute');
+    if (!this.for) {
+      throw new Error('gLabel directive: \'for\' attribute with input id or name is required.');
     }
 
-    // Wait till input element will be initialized.
+    // Wait till the input element will be initialized.
     // We should wait in case the label element was
     // inserted before the input.
     setTimeout(() => {
-      const inputParams = this.inputMsgService.getInput(inputKey);
+      const inputParams = this.inputStorageService.get(this.for);
       if (!inputParams) {
-        throw new Error(`gLabel directive: can\'t find the element with name or id: ${inputKey}`);
+        throw new Error(`gLabel directive: can\'t find the input element with id or name: ${this.for}`);
       }
       this.valid = inputParams.valid;
       this.valid.subscribe(this.toggleClassOnValidChange.bind(this));

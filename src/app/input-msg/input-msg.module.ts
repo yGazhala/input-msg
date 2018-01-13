@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { InputMsgService } from './input-msg.service';
+import { InputStorageService } from './input-storage.service';
 import { InputValidator } from './input-validator.service';
 
-import { InputDirective } from './input.directive';
-import { LabelDirective } from './label.directive';
-import { MsgComponent } from './msg.component';
-
+import { InputDirective } from './input/input.directive';
+import { LabelDirective } from './label/label.directive';
+import { MsgComponent } from './msg/msg.component';
 
 @NgModule({
   imports: [
@@ -22,6 +22,7 @@ import { MsgComponent } from './msg.component';
   ],
   providers: [
     InputMsgService,
+    InputStorageService,
     InputValidator
   ],
   exports: [
