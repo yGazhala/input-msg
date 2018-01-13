@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
 @Component({
-  selector: 'g-demo',
-  templateUrl: './demo.component.html',
-  styleUrls: ['./demo.component.scss']
+  selector: 'g-material-demo',
+  templateUrl: './material-demo.component.html',
+  styleUrls: ['./material-demo.component.scss']
 })
-export class DemoComponent {
+export class MaterialDemoComponent {
 
   public data = {
     email: '',

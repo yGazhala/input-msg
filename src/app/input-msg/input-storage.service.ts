@@ -46,8 +46,6 @@ export class InputStorageService {
     if (!this[storage][key]) {
       return;
     }
-    this[storage][key].valid.complete();
-    this[storage][key].status.complete();
     delete this[storage][key];
   }
 

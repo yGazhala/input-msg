@@ -1,40 +1,13 @@
-<section class="content">
+<nav mat-tab-nav-bar>
 
-  <section class="left-column">
-    <g-demo></g-demo>
-  </section>
+  <a mat-tab-link
+    *ngFor="let link of links"
+    [routerLink]="link.path"
+    routerLinkActive #rla="routerLinkActive"
+    [active]="rla.isActive"
+    >{{link.title}}
+  </a>
 
-  <section class="right-column">
-
-    <mat-tab-group>
-
-      <mat-tab label="HTML">
-        <div class="template-sample"
-          [innerHTML]="templateSample" 
-          highlight-js-content=".highlight"
-          >
-        </div>
-      </mat-tab>
-
-      <mat-tab label="TS">
-        <div class="sample" 
-          [innerHTML]="componentSample" 
-          highlight-js-content=".highlight"
-          >
-        </div>
-      </mat-tab>
-
-      <mat-tab label="SCSS">
-        <div class="sample" 
-          [innerHTML]="styleSample" 
-          highlight-js-content=".highlight"
-          >
-        </div>
-      </mat-tab>
+</nav>
   
-    </mat-tab-group>
-    
-  </section>
-
-</section>
-
+<router-outlet></router-outlet>

@@ -67,57 +67,6 @@
 
   </div>
 
-  <div class="form-field-wrap">
-
-    <p class="form-field-desc">
-      4) Custom input with required and length validation <br> (min = 4, max = 6).
-    </p>
-
-    <input class="custom-input"
-           type="text" 
-           placeholder="Zip Code"
-           gInput name="zipCode"
-           [(ngModel)]="data.zipCode" 
-           #zipCodeModel="ngModel" 
-           [model]="zipCodeModel"
-           required 
-           minlength="4"
-           maxlength="6"
-      >
-
-    <g-msg for="zipCode"></g-msg>
-
-  </div>
-
-  <div class="form-field-wrap">
-
-    <p class="form-field-desc">
-      5) Custom input with label. <br> Validation params: required and length (min = 4, max = 10).
-    </p>
-
-    <label class="custom-input-label" 
-           for="addressId" gLabel 
-      >Address
-    </label>
-
-    <input class="custom-input"
-           type="text"
-           gInput
-           label="Address"
-           name="address"
-           id="addressId"
-           [(ngModel)]="data.address" 
-           #addressModel="ngModel" 
-           [model]="addressModel"
-           required 
-           minlength="4"
-           maxlength="10"
-      >
-
-    <g-msg for="addressId"></g-msg>
-
-  </div>
-
   <div class="form-footer">
   
     <button type="submit" mat-raised-button color="primary" 

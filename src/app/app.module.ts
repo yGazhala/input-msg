@@ -3,6 +3,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 import { MatButtonModule, MatInputModule, MatTabsModule } from '@angular/material';
 
@@ -12,10 +13,14 @@ import { MatButtonModule, MatInputModule, MatTabsModule } from '@angular/materia
  */
 import { HighlightJsModule } from 'angular2-highlight-js';
 
+import { AppRoutingModule } from './app-routing.module';
 import { InputMsgModule } from './input-msg/input-msg.module';
 
 import { AppComponent } from './app.component';
-import { DemoComponent } from './demo/demo.component';
+import { CustomDemoComponent } from './custom-demo/custom-demo.component';
+import { DemoRootComponent } from './demo-root/demo-root.component';
+import { MaterialDemoComponent } from './material-demo/material-demo.component';
+
 
 @NgModule({
   imports: [
@@ -27,11 +32,15 @@ import { DemoComponent } from './demo/demo.component';
     InputMsgModule,
     MatButtonModule,
     MatInputModule,
-    MatTabsModule
+    MatTabsModule,
+    RouterModule,
+    AppRoutingModule
   ],
   declarations: [
     AppComponent,
-    DemoComponent
+    CustomDemoComponent,
+    DemoRootComponent,
+    MaterialDemoComponent
   ],
   providers: [],
   bootstrap: [ AppComponent ]

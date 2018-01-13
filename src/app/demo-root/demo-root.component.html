@@ -1,0 +1,40 @@
+<section class="content">
+
+  <section class="left-column">
+    <g-material-demo *ngIf="material"></g-material-demo>
+    <g-custom-demo *ngIf="!material"></g-custom-demo>
+  </section>
+
+  <section class="right-column">
+
+    <mat-tab-group>
+
+      <mat-tab label="HTML">
+        <div class="template-sample"
+          [innerHTML]="templateSample" 
+          highlight-js-content=".highlight"
+          >
+        </div>
+      </mat-tab>
+
+      <mat-tab label="TS">
+        <div class="sample" 
+          [innerHTML]="componentSample" 
+          highlight-js-content=".highlight"
+          >
+        </div>
+      </mat-tab>
+
+      <mat-tab label="SCSS">
+        <div class="sample" 
+          [innerHTML]="styleSample" 
+          highlight-js-content=".highlight"
+          >
+        </div>
+      </mat-tab>
+  
+    </mat-tab-group>
+    
+  </section>
+  
+</section>
