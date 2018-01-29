@@ -1,6 +1,8 @@
 let template = `
-  <form class="form" #form="ngForm" novalidate
-    (ngSubmit)="onSubmit(form)"
+  <form class="form"
+        #form="ngForm"
+        novalidate
+        (ngSubmit)="onSubmit(form)"
     >
 
     <h2>Demo Form</h2>
@@ -8,117 +10,73 @@ let template = `
     <div class="form-field-wrap">
 
       <p class="form-field-desc">
-        1) required field with length validation (min = 2, max = 5).
+        1) Required field with length validation (min = 2, max = 5).
       </p>
 
       <mat-form-field>
         <input type="text"
                matInput
+               name="userName"
                placeholder="Name"
-               [(ngModel)]="data.name" name="userName"
+               [(ngModel)]="data.name"
                #nameModel="ngModel"
-               [gInput]="nameModel"
+               gInput
+               [model]="nameModel"
                required
                minlength="2"
                maxlength="5"
           >
       </mat-form-field>
 
-      <g-msg inputName="userName"></g-msg>
+      <g-msg for="userName"></g-msg>
 
     </div>
 
     <div class="form-field-wrap">
 
       <p class="form-field-desc">
-        2) required field with email validation
+        2) Required field with email validation
       </p>
 
       <mat-form-field>
         <input type="email"
                matInput
+               name="email"
                placeholder="Email"
                [(ngModel)]="data.email"
                #emailModel="ngModel"
-               name="email"
-               [gInput]="emailModel"
+               gInput
+               [model]="emailModel"
                required
           >
       </mat-form-field>
 
-      <g-msg inputName="email"></g-msg>
+      <g-msg for="email"></g-msg>
 
     </div>
 
     <div class="form-field-wrap">
 
       <p class="form-field-desc">
-        3) required field with integer and range validation <br>(min = 1, max = 100).
+        3) Required field with integer and range validation <br>(min = 1, max = 100).
       </p>
 
       <mat-form-field>
         <input type="number"
                matInput
+               name="quantity"
                placeholder="Quantity"
                [(ngModel)]="data.quantity"
-               name="quantity"
                #quantityModel="ngModel"
-               [gInput]="quantityModel"
-               required integer
+               gInput
+               [model]="quantityModel"
+               required
+               integer
                min="1" max="100"
           >
       </mat-form-field>
 
-      <g-msg inputName="quantity"></g-msg>
-
-    </div>
-
-    <div class="form-field-wrap">
-
-      <p class="form-field-desc">
-        4) Custom input with required and length validation (min = 4, max = 6).
-      </p>
-
-      <input class="custom-input"
-             type="text"
-             placeholder="Zip Code"
-             name="zipCode"
-             [(ngModel)]="data.zipCode"
-             #zipCodeModel="ngModel"
-             [gInput]="zipCodeModel"
-             required
-             minlength="4"
-             maxlength="6"
-        >
-
-      <g-msg inputName="zipCode"></g-msg>
-
-    </div>
-
-    <div class="form-field-wrap">
-
-      <p class="form-field-desc">
-        5) Custom input with label. Validation params: required and length (min = 4, max = 10).
-      </p>
-
-      <label for="addressId" gLabel class="custom-input-label">
-        Address
-      </label>
-
-      <input class="custom-input"
-            type="text"
-            label="Address"
-            name="address"
-            id="addressId"
-            [(ngModel)]="data.address"
-            #addressModel="ngModel"
-            [gInput]="addressModel"
-            required
-            minlength="4"
-            maxlength="10"
-        >
-
-      <g-msg inputId="addressId"></g-msg>
+      <g-msg for="quantity"></g-msg>
 
     </div>
 
@@ -156,8 +114,7 @@ export const demoComponent = `
           email: '',
           name: '',
           quantity: undefined,
-          zipCode: '',
-          address: ''
+          comment: ''
         };
 
         public onSubmit(form: NgForm): void {
@@ -188,24 +145,6 @@ export const demoScss = `
           margin-top: 10px;
           display: flex;
           justify-content: flex-end;
-        }
-      }
-      .custom-input {
-        width: 100%;
-        padding: 3px 5px;
-        border: 1px solid #3f51b5;
-        border-radius: 4px;
-        outline: none;
-        transition: border-color 300ms ease;
-        &.g-input_invalid {
-          border-color: #f44336;
-        }
-      }
-      .custom-input-label {
-        font-size: 12px;
-        color: #3f51b5;
-        &.g-input_invalid {
-          color: #f44336;
         }
       }
     </code>

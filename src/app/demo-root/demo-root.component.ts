@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 import { demoComponent, demoTemplate, demoScss } from '../material-demo/code-samle';
+import { customDemoTemplate, customDemoScss } from '../custom-demo/code-samle';
 
 @Component({
   selector: 'g-demo-root',
@@ -23,11 +24,16 @@ export class DemoRootComponent implements OnInit {
 
   public ngOnInit(): void {
 
-    this.material = this.activatedRoute.snapshot.url[0].path === 'material';
-
     this.componentSample = demoComponent;
-    this.styleSample = demoScss;
-    this.templateSample = this.sanitizer.bypassSecurityTrustHtml(demoTemplate);
+
+    this.material = this.activatedRoute.snapshot.url[0].path === 'material';
+    if (this.material) {
+      this.styleSample = demoScss;
+      this.templateSample = this.sanitizer.bypassSecurityTrustHtml(demoTemplate);
+    } else {
+      this.styleSample = customDemoScss;
+      this.templateSample = this.sanitizer.bypassSecurityTrustHtml(customDemoTemplate);
+    }
   }
 
 }
