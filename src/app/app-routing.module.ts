@@ -14,7 +14,7 @@ const appRoutes: Routes = [
   },
   {
     path: '',
-    redirectTo: '/material',
+    redirectTo: 'material',
     pathMatch: 'full'
   }
 ];
