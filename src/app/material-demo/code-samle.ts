@@ -10,7 +10,7 @@ let template = `
     <div class="form-field-wrap">
 
       <p class="form-field-desc">
-        1) Required field with length validation (min = 2, max = 5).
+        1) Text input. Validation params: required, minlength=2, maxlength=10.
       </p>
 
       <mat-form-field>
@@ -24,7 +24,7 @@ let template = `
                [model]="nameModel"
                required
                minlength="2"
-               maxlength="5"
+               maxlength="10"
           >
       </mat-form-field>
 
@@ -35,7 +35,7 @@ let template = `
     <div class="form-field-wrap">
 
       <p class="form-field-desc">
-        2) Required field with email validation
+        2) Email input. Validation params: required.
       </p>
 
       <mat-form-field>
@@ -58,7 +58,7 @@ let template = `
     <div class="form-field-wrap">
 
       <p class="form-field-desc">
-        3) Required field with integer and range validation <br>(min = 1, max = 100).
+        3) Number input. Validation params: integer, min=1, max=100.
       </p>
 
       <mat-form-field>
@@ -77,6 +77,31 @@ let template = `
       </mat-form-field>
 
       <g-msg for="quantity"></g-msg>
+
+    </div>
+
+    <div class="form-field-wrap">
+
+      <p class="form-field-desc">
+        4) Text area. Validation params: required, maxlength="20".
+      </p>
+
+      <mat-form-field>
+        <textarea rows="1"
+                  matInput
+                  name="comment"
+                  placeholder="Comment"
+                  gInput
+                  [(ngModel)]="data.comment"
+                  #commentModel="ngModel"
+                  [model]="commentModel"
+                  required
+                  maxlength="20"
+          >
+        </textarea>
+      </mat-form-field>
+
+      <g-msg for="comment"></g-msg>
 
     </div>
 

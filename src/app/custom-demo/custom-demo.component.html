@@ -6,7 +6,7 @@
   <div class="form-field-wrap">
 
     <p class="form-field-desc">
-      1) Required field with length validation (min = 2, max = 5).
+      1) Text input.<br>Validation params: required, minlength=2, maxlength=10.
     </p>
 
     <input class="custom-input"
@@ -19,7 +19,7 @@
            [model]="nameModel"
            required 
            minlength="2"
-           maxlength="5"
+           maxlength="10"
       >
 
     <g-msg for="userName"></g-msg>
@@ -29,7 +29,7 @@
   <div class="form-field-wrap">
 
     <p class="form-field-desc">
-      2) Field with label. Validation params: required and email.
+      2) Email input with label.<br>Validation params: required.
     </p>
 
     <label class="custom-input-label" 
@@ -56,7 +56,7 @@
   <div class="form-field-wrap">
 
     <p class="form-field-desc">
-      3) Required field with integer and range validation <br>(min = 1, max = 100).
+      3) Number input.<br>Validation params: integer, min=1, max=100.
     </p>
     
     <input class="custom-input"
@@ -72,6 +72,35 @@
       >
   
     <g-msg for="quantity"></g-msg>
+
+  </div>
+
+  <div class="form-field-wrap">
+
+    <p class="form-field-desc">
+      4) Text area with label.<br>Validation params: required, maxlength="20".
+    </p>
+
+    <label class="custom-input-label" 
+           gLabel 
+           for="commentId"
+      >Comment
+    </label>
+
+    <textarea class="custom-input"
+              gInput
+              name="comment"
+              id="commentId"
+              label="Comment"
+              [(ngModel)]="data.comment" 
+              #commentModel="ngModel" 
+              [model]="commentModel"
+              required
+              maxlength="20"
+      >
+    </textarea>
+  
+    <g-msg for="commentId"></g-msg>
 
   </div>
 

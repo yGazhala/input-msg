@@ -19,7 +19,7 @@ import { inputMsg } from '../types';
  * through InputStorageService.
  */
 @Directive({
-  selector: '[gInput]',
+  selector: 'input[gInput], textarea[gInput]',
   providers: [
     { provide: NG_VALIDATORS, useExisting: InputDirective, multi: true }
   ]
@@ -269,12 +269,7 @@ export class InputDirective implements OnInit, OnDestroy {
 
   private setElemType(): void {
 
-    if (this.elem.tagName !== 'INPUT' && this.elem.tagName !== 'TEXT-AREA') {
-      throw new Error(
-        `gInput directive: ${this.elem.tagName.toLowerCase()} elem is not supported. Consider to use only <input> or <text-area> elem.`
-      );
-    }
-    if (this.elem.tagName === 'TEXT-AREA') {
+    if (this.elem.tagName === 'TEXTAREA') {
       this.elemType = 'textArea';
       return;
     }
