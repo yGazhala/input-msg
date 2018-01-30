@@ -20,7 +20,10 @@ const appRoutes: Routes = [
 ];
 
 @NgModule({
-  imports: [ RouterModule.forRoot(appRoutes)],
+  imports: [
+    // github pages hosting requires hash style
+    RouterModule.forRoot(appRoutes, { useHash: true })
+  ],
   exports: [ RouterModule ]
 })
 export class AppRoutingModule { }
