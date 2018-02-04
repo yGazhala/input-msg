@@ -1,3 +1,4 @@
+<button (click)="test()">Test</button>
 <form class="form" #form="ngForm" novalidate
   (ngSubmit)="onSubmit(form)"
   >
@@ -16,9 +17,9 @@
              name="userName"
              #nameModel="ngModel" 
              [model]="nameModel"
-             required 
-             minlength="2"
-             maxlength="10"
+             [required]="required" 
+             [minlength]="minlength"
+             [maxlength]="maxlength"
         >
     </mat-form-field>
     <g-msg for="userName"></g-msg>

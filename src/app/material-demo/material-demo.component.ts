@@ -15,6 +15,10 @@ export class MaterialDemoComponent {
     comment: ''
   };
 
+  required = true;
+  minlength = 3;
+  maxlength = 10;
+
   public onSubmit(form: NgForm): void {
     if (form.invalid) {
       return;
@@ -27,6 +31,12 @@ export class MaterialDemoComponent {
         quantity: ${this.data.quantity},
         comment: ${this.data.comment}
     `);
+  }
+
+  public test(): void {
+    // this.required = false;
+    this.minlength = 2;
+    this.maxlength = 5;
   }
 
 }

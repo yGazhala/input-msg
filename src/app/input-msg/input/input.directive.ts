@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Input, OnInit, OnDestroy } from '@angular/core';
+import { Directive, ElementRef, Input, OnInit, OnChanges, OnDestroy, SimpleChange } from '@angular/core';
 import { NG_VALIDATORS, AbstractControl, NgModel, NgForm } from '@angular/forms';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -25,7 +25,7 @@ import { inputMsg } from '../types';
   ]
 })
 
-export class InputDirective implements OnInit, OnDestroy {
+export class InputDirective implements OnInit, OnChanges, OnDestroy {
 
   @Input() public id: string;
   /**
@@ -61,14 +61,7 @@ export class InputDirective implements OnInit, OnDestroy {
   private params = {} as inputMsg.InputParams;
   // contains true if the prevoius state was valid.
   private prevValid: boolean;
-  private statusSubscription: {
-    blur: Subscription;
-    controlStatus: Subscription;
-    // present if maxlength validation param was set
-    maxLength?: Subscription;
-    modelChange: Subscription;
-    formSubmit: Subscription
-  };
+  private statusSubscriptions: Subscription[] = [];
   private readonly supportedType = {
     email: true,
     password: true,
@@ -79,11 +72,20 @@ export class InputDirective implements OnInit, OnDestroy {
   private validationParams: inputMsg.ValidationParam[] = [];
 
   constructor(
+    private elemRef: ElementRef,
     private inputMsgService: InputMsgService,
     private inputStorageService: InputStorageService,
-    private validator: InputValidator,
-    private elemRef: ElementRef
+    private validator: InputValidator
   ) { }
+
+  public ngOnChanges(changes: {[prop: string]: SimpleChange}): void {
+
+  }
+
+  public ngOnDestroy(): void {
+    this.statusOff();
+    this.inputStorageService.remove(this.inputKey);
+  }
 
   public ngOnInit(): void {
 
@@ -93,7 +95,7 @@ export class InputDirective implements OnInit, OnDestroy {
 
     this.setElemType();
 
-    this.inputKey =  this.id || this.name;
+    this.inputKey = this.id || this.name;
     if (!this.inputKey) {
       throw new Error('gInput directive: id or name attribute is required');
     }
@@ -106,40 +108,103 @@ export class InputDirective implements OnInit, OnDestroy {
     setTimeout(() => {
       this.form = this.elemModel.formDirective as NgForm;
       this.statusOn();
-      this.params.valid.subscribe(this.toggleClassOnValidChange.bind(this));
     }, 0);
-  }
-
-  public ngOnDestroy(): void {
-    this.statusOff();
-    this.params.valid.unsubscribe();
-    this.inputStorageService.remove(this.inputKey);
   }
 
   /**
    * Stops generating the input status
    */
   public statusOff(): void {
-
-    Object.keys(this.statusSubscription).forEach(key => {
-      this.statusSubscription[key].unsubscribe();
+    this.statusSubscriptions.forEach((sub) => {
+      sub.unsubscribe();
     });
   }
 
   /**
-   * Starts generating the input status
+   * Starts generating the input status.
    */
   public statusOn(): void {
 
-    this.statusSubscription = {
-      blur: Observable.fromEvent(this.elem, 'blur').subscribe(this.onError.bind(this)),
-      controlStatus: this.elemModel.statusChanges.subscribe(this.emitValidAndPristineStatus.bind(this)),
-      modelChange: this.elemModel.valueChanges.subscribe(this.onError.bind(this)),
-      formSubmit: this.form.ngSubmit.subscribe(this.emitErrorStatus.bind(this))
+    // Emits an error status if the input is invalid.
+    const emitErrorStatus = (): void => {
+      for (let i = 0; i < this.validationParams.length; i++) {
+        const errName = this.validationParams[i];
+        if (this.elemModel.hasError(errName)) {
+          this.params.valid.next(false);
+          this.params.status.next(errName);
+          return;
+        }
+      }
     };
+
+    const emitErrorStatusOnTouched = (): void => {
+      if (this.elemModel.touched || this.form.submitted) {
+        emitErrorStatus();
+      }
+    };
+
+    const emitValidAndPristineStatus = (status: string): void => {
+      switch (status) {
+        case 'INVALID':
+          this.prevValid = false;
+          break;
+        case 'VALID':
+          if (!this.prevValid) {
+            this.params.valid.next(true);
+            this.params.status.next('valid');
+          }
+          this.prevValid = true;
+          break;
+        case 'PRISTINE':
+          this.params.valid.next(true);
+          this.params.status.next('pristine');
+          break;
+        default:
+          return;
+      }
+    };
+
+    const emitMaxLengthStatus = (): void => {
+      if (this.elemModel.value.length === +this.maxlength) {
+        this.params.status.next('maxlength');
+      }
+    };
+
+    const blurSub: Subscription = Observable
+      .fromEvent(this.elem, 'blur')
+      .subscribe(emitErrorStatusOnTouched);
+    this.statusSubscriptions.push(blurSub);
+
+    const controlValueSub: Subscription = this.elemModel.valueChanges
+      .subscribe(emitErrorStatusOnTouched);
+    this.statusSubscriptions.push(controlValueSub);
+
+    const formSubmitSub: Subscription = this.form.ngSubmit
+      .subscribe(emitErrorStatus);
+    this.statusSubscriptions.push(formSubmitSub);
+
+    const controlStatusSub: Subscription = this.elemModel.statusChanges
+      .subscribe(emitValidAndPristineStatus);
+    this.statusSubscriptions.push(controlStatusSub);
+
     if (this.hasNumberParam('maxlength')) {
-      this.statusSubscription.maxLength = this.elemModel.valueChanges.subscribe(this.onMaxLength.bind(this));
+      const controlValueLengthSub: Subscription = this.elemModel.valueChanges
+        .subscribe(emitMaxLengthStatus);
+      this.statusSubscriptions.push(controlValueLengthSub);
     }
+
+    // Adds/removes 'g-input_invalid' class to the input
+    const toggleClassOnValidChange = (valid: boolean): void => {
+      if (valid) {
+        this.elem.classList.remove('g-input_invalid');
+      } else {
+        this.elem.classList.add('g-input_invalid');
+      }
+    };
+    const validSub: Subscription = this.params.valid
+      .subscribe(toggleClassOnValidChange);
+    this.statusSubscriptions.push(validSub);
+
   }
 
   /**
@@ -148,7 +213,7 @@ export class InputDirective implements OnInit, OnDestroy {
    * 'email', 'integer', 'max', 'min'.
    *
    * Note, 'required', 'minlength' and 'maxlength'
-   * validatiors are already supported by Angular.
+   * validators are already supported by Angular.
    */
   public validate(control: AbstractControl): { [key: string]: any } {
 
@@ -165,68 +230,17 @@ export class InputDirective implements OnInit, OnDestroy {
         }
       }
       if (this.hasNumberParam('min') && this.hasNumberParam('max')) {
-        const isMinInvalid = this.validator.min(control.value, + this.min);
+        const isMinInvalid = this.validator.min(control.value, +this.min);
         if (isMinInvalid) {
           return isMinInvalid;
         }
-        return this.validator.max(control.value, + this.max);
+        return this.validator.max(control.value, +this.max);
       }
       if (this.hasNumberParam('min') && !this.hasNumberParam('max')) {
         return this.validator.min(control.value, + this.min);
       }
       // only 'max' param is set
       return this.validator.max(control.value, + this.max);
-    }
-  }
-
-  // Emits an error status if the input is invalid.
-  private emitErrorStatus(): void {
-
-    for (let i = 0; i < this.validationParams.length; i++) {
-      const errName = this.validationParams[i];
-      if (this.elemModel.hasError(errName)) {
-        this.params.valid.next(false);
-        this.params.status.next(errName);
-        return;
-      }
-    }
-  }
-
-  // Filters statuses and emits 'valid' and 'pristine' status
-  private emitValidAndPristineStatus(status: string): void {
-
-    switch (status) {
-      case 'INVALID':
-        this.prevValid = false;
-        break;
-      case 'VALID':
-        if (!this.prevValid) {
-          this.params.valid.next(true);
-          this.params.status.next('valid');
-        }
-        this.prevValid = true;
-        break;
-      case 'PRISTINE':
-        this.params.valid.next(true);
-        this.params.status.next('pristine');
-        break;
-      default:
-        return;
-    }
-  }
-
-  // This callback emits an error status if the input
-  // has been touched and it is invalid.
-  private onError(): void {
-    if (this.elemModel.touched || this.form.submitted) {
-      this.emitErrorStatus();
-    }
-  }
-
-  private onMaxLength(): void {
-
-    if (this.elemModel.value.length === + this.maxlength) {
-      this.params.status.next('maxlength');
     }
   }
 
@@ -309,12 +323,4 @@ export class InputDirective implements OnInit, OnDestroy {
     parent.classList.add('g-msg__mat-form-field');
   }
 
-  // Adds/removes 'g-input_invalid' class to the input
-  private toggleClassOnValidChange(valid: boolean): void {
-    if (valid) {
-      this.elem.classList.remove('g-input_invalid');
-    } else {
-      this.elem.classList.add('g-input_invalid');
-    }
-  }
 }
