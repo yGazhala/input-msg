@@ -4,9 +4,13 @@
  * So we decided to use .ts files for declarations until the issue will be fixed.
  * See: https://github.com/angular/angular-cli/issues/4874
  */
+
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Subject } from 'rxjs/Subject';
 
 export declare module inputMsg {
+
+  type AggregatedInputType = 'email' | 'number' | 'textLike';
 
   // Message config
   interface Config {
@@ -25,18 +29,21 @@ export declare module inputMsg {
   type ExtendedMsgFn = (placeholder: string, allowedValue: number) => string;
 
   interface InputParams {
-    email?: boolean;
-    integer?: boolean;
     label?: string;
-    max?: number;
-    maxlength?: number;
-    min?: number;
-    minlength?: number;
-    required?: boolean;
-    status: BehaviorSubject<InputStatus>;
-    valid: BehaviorSubject<boolean>;
     // contains true if there is a Material Design input
     material: boolean;
+    paramChange: Subject<'label' | ValidationParam>;
+    status: BehaviorSubject<InputStatus>;
+    valid: BehaviorSubject<boolean>;
+    validationParams: {
+      email?: boolean;
+      integer?: boolean;
+      max?: number;
+      maxlength?: number;
+      min?: number;
+      minlength?: number;
+      required?: boolean;
+    };
   }
 
   type InputStatus = 'pristine' | 'valid' | ValidationParam;
@@ -59,4 +66,9 @@ export declare module inputMsg {
   type SupportedInputType = 'email' | 'text' | 'password' | 'number';
 
   type ValidationParam = 'email' | 'integer' | 'max' | 'maxlength' | 'min' | 'minlength' | 'required';
+
+  interface ValidationParamOption {
+    name: ValidationParam;
+    type: 'boolean' | 'number';
+  }
 }

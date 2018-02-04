@@ -3,6 +3,7 @@ import { NG_VALIDATORS, AbstractControl, NgModel, NgForm } from '@angular/forms'
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/observable/fromEvent';
 
@@ -54,20 +55,14 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
 
   private elem: HTMLInputElement;
   private elemModel: NgModel;
-  private elemType: inputMsg.SupportedInputType | 'textArea';
+  private elemType: inputMsg.AggregatedInputType;
   private form: NgForm;
   private inputKey: string;
+  private inputParams: inputMsg.InputParams;
   private isMaterial: boolean;
-  private params = {} as inputMsg.InputParams;
-  // contains true if the prevoius state was valid.
+  // contains true if the prevoius input state was valid.
   private prevValid: boolean;
   private statusSubscriptions: Subscription[] = [];
-  private readonly supportedType = {
-    email: true,
-    password: true,
-    text: true,
-    number: true
-  };
   // the current validation params of this input
   private validationParams: inputMsg.ValidationParam[] = [];
 
@@ -78,8 +73,34 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
     private validator: InputValidator
   ) { }
 
-  public ngOnChanges(changes: {[prop: string]: SimpleChange}): void {
+  public ngOnChanges(changes: { [prop: string]: SimpleChange }): void {
 
+    const changeableProps = {
+      placeholder: true,
+      label: true,
+      required: true,
+      integer: true,
+      max: true,
+      min: true,
+      maxlength: true,
+      minlength: true
+    };
+
+    Object.keys(changes).forEach((name) => {
+
+      if (!changeableProps[name] || changes[name].isFirstChange()) {
+        return;
+      }
+
+      if (name === 'placeholder' || name === 'label') {
+        this.inputParams.label = changes[name].currentValue();
+        this.inputParams.paramChange.next('label');
+        return;
+      }
+
+      this.setValidationParams();
+      this.inputParams.paramChange.next(name as inputMsg.ValidationParam);
+    });
   }
 
   public ngOnDestroy(): void {
@@ -93,15 +114,16 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
     this.elemModel = this.model || this.inputModel;
     this.isMaterial = this.matInput === '' || this.mdInput === '';
 
-    this.setElemType();
+    this.initElemType();
 
     this.inputKey = this.id || this.name;
     if (!this.inputKey) {
       throw new Error('gInput directive: id or name attribute is required');
     }
 
-    this.setParams();
-    this.inputStorageService.set(this.params, this.id, this.name);
+    this.initInputParams();
+    this.setValidationParams();
+    this.inputStorageService.set(this.inputParams, this.id, this.name);
     this.setMatFormFieldClass();
 
     // Wait till NgForm will be initialized
@@ -121,17 +143,16 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
-   * Starts generating the input status.
+   * Starts generating the input status
    */
   public statusOn(): void {
 
     // Emits an error status if the input is invalid.
     const emitErrorStatus = (): void => {
-      for (let i = 0; i < this.validationParams.length; i++) {
-        const errName = this.validationParams[i];
+      for (const errName of this.validationParams) {
         if (this.elemModel.hasError(errName)) {
-          this.params.valid.next(false);
-          this.params.status.next(errName);
+          this.inputParams.valid.next(false);
+          this.inputParams.status.next(errName);
           return;
         }
       }
@@ -150,14 +171,14 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
           break;
         case 'VALID':
           if (!this.prevValid) {
-            this.params.valid.next(true);
-            this.params.status.next('valid');
+            this.inputParams.valid.next(true);
+            this.inputParams.status.next('valid');
           }
           this.prevValid = true;
           break;
         case 'PRISTINE':
-          this.params.valid.next(true);
-          this.params.status.next('pristine');
+          this.inputParams.valid.next(true);
+          this.inputParams.status.next('pristine');
           break;
         default:
           return;
@@ -166,7 +187,7 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
 
     const emitMaxLengthStatus = (): void => {
       if (this.elemModel.value.length === +this.maxlength) {
-        this.params.status.next('maxlength');
+        this.inputParams.status.next('maxlength');
       }
     };
 
@@ -201,7 +222,7 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
         this.elem.classList.add('g-input_invalid');
       }
     };
-    const validSub: Subscription = this.params.valid
+    const validSub: Subscription = this.inputParams.valid
       .subscribe(toggleClassOnValidChange);
     this.statusSubscriptions.push(validSub);
 
@@ -244,35 +265,6 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  // Sets this.params and this.validationParams
-  private setParams(): void {
-
-    const booleanParams = ['required', 'integer'];
-    const numberParams = ['max', 'min', 'maxlength', 'minlength'];
-
-    this.params.label = this.placeholder || this.label;
-    this.params.material = this.isMaterial;
-    this.params.status = new BehaviorSubject('pristine' as inputMsg.InputStatus);
-    this.params.valid = new BehaviorSubject(true);
-
-    booleanParams.forEach((name: inputMsg.ValidationParam) => {
-      if (this.hasBoolaenParam(name)) {
-        this.params[name] = true;
-        this.validationParams.push(name);
-      }
-    });
-    if (this.elemType === 'email') {
-      this.params.email = true;
-      this.validationParams.push('email');
-    }
-    numberParams.forEach((name: inputMsg.ValidationParam) => {
-      if (this.hasNumberParam(name)) {
-        this.params[name] = + this[name];
-        this.validationParams.push(name);
-      }
-    });
-  }
-
   private hasBoolaenParam(name: string): boolean {
     return this[name] === '' || this[name] === true;
   }
@@ -281,23 +273,54 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
     return this.validator.isNumber(this[name]);
   }
 
-  private setElemType(): void {
+  private initElemType(): void {
 
     if (this.elem.tagName === 'TEXTAREA') {
-      this.elemType = 'textArea';
+      this.elemType = 'textLike';
       return;
     }
-    if (!this.supportedType[this.type]) {
+
+    const supportedInputType = {
+      email: true,
+      password: true,
+      text: true,
+      number: true
+    };
+
+    if (!supportedInputType[this.type]) {
       throw new Error(
         `gInput directive: input with type ${this.type} is not supported. Consider to use only email, text, number or password type.`
       );
     }
+
     if (this.hasBoolaenParam('integer') && this.type !== 'number') {
       throw new Error(
         `gInput directive: integer param is not compatible with ${this.type}. Use an input with number type instead.`
       );
     }
-    this.elemType = this.type;
+
+    switch (this.type) {
+      case 'number':
+        this.elemType = this.type;
+        break;
+      case 'email':
+        this.elemType = this.type;
+        break;
+      default:
+        this.elemType = 'textLike';
+    }
+  }
+
+  private initInputParams(): void {
+
+    this.inputParams = {
+      label: this.placeholder || this.label,
+      material: this.isMaterial,
+      paramChange: new Subject(),
+      status: new BehaviorSubject('pristine' as inputMsg.InputStatus),
+      valid: new BehaviorSubject(true),
+      validationParams: undefined
+    };
   }
 
   // Sets 'g-msg__mat-form-field'
@@ -321,6 +344,46 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
       }
     }
     parent.classList.add('g-msg__mat-form-field');
+  }
+
+  private setValidationParams(): void {
+
+    this.inputParams.validationParams = {};
+    this.validationParams = [];
+
+    // Available validation params for each supported input type
+    const validationParamOptions = {
+      email: [
+        { name: 'required', type: 'boolean' },
+        { name: 'email', type: 'boolean' }
+      ],
+      number: [
+        { name: 'required', type: 'boolean' },
+        { name: 'min', type: 'number' },
+        { name: 'max', type: 'number' },
+        { name: 'integer', type: 'boolean' }
+      ],
+      textLike: [
+        { name: 'required', type: 'boolean' },
+        { name: 'minlength', type: 'number' },
+        { name: 'maxlength', type: 'number' }
+      ]
+    };
+
+    const options = validationParamOptions[this.elemType] as inputMsg.ValidationParamOption[];
+    options.forEach((param) => {
+      const checker = param.type === 'boolean' ? this.hasBoolaenParam : this.hasNumberParam;
+      if (!checker(param.name)) {
+        return;
+      }
+      if (param.type === 'boolean') {
+        this.inputParams.validationParams[param.name] = true;
+      } else {
+        this.inputParams.validationParams[param.name] = +this[param.name];
+      }
+      this.validationParams.push(param.name);
+    });
+
   }
 
 }
