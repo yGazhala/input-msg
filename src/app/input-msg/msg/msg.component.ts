@@ -1,13 +1,16 @@
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChange, ViewEncapsulation } from '@angular/core';
+
+import { Subscription } from 'rxjs/Subscription';
 
 import { InputMsgService } from '../input-msg.service';
 import { InputStorageService } from '../input-storage.service';
 
 import { inputMsg } from '../types';
 
+
 /**
  * Displays a message for an input element
- * depending on its validation status.
+ * depending on it`s validation status.
  */
 @Component({
   selector: 'g-msg',
@@ -15,7 +18,7 @@ import { inputMsg } from '../types';
   styleUrls: ['./msg.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class MsgComponent implements OnInit {
+export class MsgComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * input id or name
@@ -48,16 +51,14 @@ export class MsgComponent implements OnInit {
   // Currently shown message
   public currentMsg: string;
 
+  private currentStatus: inputMsg.InputStatus;
   private defaultConfig: inputMsg.Config;
   private inputKey: string;
-  // Messages to show when input status changes
+  private inputParams: inputMsg.InputParams;
+  // All available messages corresponded
+  // to validation params of the input
   private messages: inputMsg.ResultMsg = {};
-  // validation params with inputMsg.MsgFn type support
-  private readonly msgFnSupport = ['email', 'integer', 'required'];
-  private params: inputMsg.InputParams;
-  private status: inputMsg.InputStatus;
-  // all supported validation params
-  private validationParams: inputMsg.ValidationParam[];
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private inputMsgService: InputMsgService,
@@ -70,37 +71,92 @@ export class MsgComponent implements OnInit {
     return {
       'g-msg_pos_bottom-left': position === 'bottom-left',
       'g-msg_pos_bottom-right': position === 'bottom-right',
-      'g-msg_color_tooltip': this.status === 'maxlength',
-      'g-msg_material': this.params.material
+      'g-msg_color_tooltip': this.currentStatus === 'maxlength',
+      'g-msg_material': this.inputParams.material
     };
+  }
+
+  public ngOnChanges(changes: { [prop: string]: SimpleChange }): void {
+
+    const changeableProps = {
+      email: true,
+      integer: true,
+      max: true,
+      maxlength: true,
+      min: true,
+      minlength: true,
+      position: true,
+      required: true
+    };
+
+    Object.keys(changes).forEach(name => {
+      if (!changeableProps[name] || changes[name].isFirstChange()) {
+        return;
+      }
+      this.setMessage(name as inputMsg.ValidationParam);
+
+      // update currentMsg if it has been changed
+      // and the input is invalid
+      if (this.currentStatus === name && name !== 'maxlength') {
+        this.currentMsg = this.messages[name];
+      }
+    });
+  }
+
+  public ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   public ngOnInit(): void {
 
     this.defaultConfig = this.inputMsgService.config;
-    this.validationParams = this.inputMsgService.validationParams;
 
     this.inputKey = this.for || this.inputId || this.inputName;
     if (!this.inputKey) {
       throw new Error('gMsg component: \'for\' parameter with the input id or name must be provided.');
     }
 
-    this.params = this.inputStorageService.get(this.inputKey);
-    if (!this.params) {
+    this.inputParams = this.inputStorageService.get(this.inputKey);
+    if (!this.inputParams) {
       throw new Error(`gMsg component: can\'t find the input element with id or name: ${this.inputKey}`);
     }
 
     // Set default or custom messages for given validation params
-    this.validationParams.forEach((name: inputMsg.ValidationParam) => {
-      this.setMsg(name);
-    });
+    this.setAllMessages();
+
     // Listen to the input status
-    this.params.status.subscribe(this.onStatusChange.bind(this));
+    const statusSub: Subscription = this.inputParams.status
+      .subscribe(this.onStatusChange.bind(this));
+    this.subscriptions.push(statusSub);
+
+    // Listen to the input params change
+    const inputParamsChangeSub: Subscription = this.inputParams.paramChange
+      .subscribe(this.onInputParamsChange.bind(this));
+    this.subscriptions.push(inputParamsChangeSub);
   }
 
+  // Updates messages when input params change
+  private onInputParamsChange(changedPropName: 'label' | inputMsg.ValidationParam): void {
+
+    if (changedPropName === 'label') {
+      this.setAllMessages();
+    } else {
+      this.setMessage(changedPropName as inputMsg.ValidationParam);
+    }
+
+    // update current msg if the input is invalid
+    if (this.currentStatus === 'pristine' ||
+        this.currentStatus === 'valid' ||
+        this.currentStatus === 'maxlength') {
+      return;
+    }
+    this.currentMsg = this.messages[this.currentStatus];
+  }
+
+  // Updates currentStatus and shows/hides currentMsg
   private onStatusChange(status: inputMsg.InputStatus): void {
 
-    this.status = status;
+    this.currentStatus = status;
     switch (status) {
       case 'pristine':
         this.currentMsg = '';
@@ -117,29 +173,54 @@ export class MsgComponent implements OnInit {
     }
   }
 
+  private setAllMessages(): void {
+    Object.keys(this.inputParams.validationParams).forEach((name: inputMsg.ValidationParam) => {
+      this.setMessage(name);
+    });
+  }
+
   // Sets message text for a given validation parameter.
   // If appropriate message expression is not provided
   // throgh @Input() binding - the default one is used instead.
-  private setMsg(name: inputMsg.ValidationParam): void {
+  private setMessage(name: inputMsg.ValidationParam): void {
 
-    if (typeof this.params[name] === 'undefined') {
+    if (typeof this.inputParams.validationParams[name] === 'undefined') {
       return;
     }
+
+    // helper type guard
+    const isFn = (arg: any): arg is inputMsg.MsgFn | inputMsg.ExtendedMsgFn => {
+      return typeof arg === 'function';
+    };
+
+    // validation params with inputMsg.MsgFn type support
+    const msgFnSupport = ['email', 'integer', 'required'];
+
     // set a message generated from MsgFn() or as a simle string
-    if (this.msgFnSupport.indexOf(name) !== -1) {
-      const defaultMsg = this.defaultConfig.msg[name] as inputMsg.MsgFn | string;
-      const msg = <inputMsg.MsgFn | string>this[name] || defaultMsg;
-      this.messages[name] = this.isFn(msg) ? msg(this.params.label) : msg;
+    if (msgFnSupport.indexOf(name) !== -1) {
+      let msgExpression: inputMsg.MsgFn | string;
+      if (typeof this[name] !== 'undefined') {
+        msgExpression = this[name] as inputMsg.MsgFn | string;
+      } else {
+        msgExpression = this.defaultConfig.msg[name] as inputMsg.MsgFn | string;
+      }
+      this.messages[name] = isFn(msgExpression) ? msgExpression(this.inputParams.label) : msgExpression;
       return;
     }
-    // Otherwise - set a message generated from ExtendedMsgFn() or as a simle string
-    const defaultExpression = this.defaultConfig.msg[name] as inputMsg.ExtendedMsgFn | string;
-    const expression = <inputMsg.ExtendedMsgFn | string>this[name] || defaultExpression;
-    this.messages[name] = this.isFn(expression) ? expression(this.params.label, this.params[name] as number) : expression;
-  }
 
-  private isFn(arg: any): arg is inputMsg.MsgFn | inputMsg.ExtendedMsgFn {
-    return typeof arg === 'function';
+    // Otherwise - set a message generated from ExtendedMsgFn() or as a simle string
+    let extendedMsgExpression: inputMsg.ExtendedMsgFn | string;
+    if (typeof this[name] !== 'undefined') {
+      extendedMsgExpression = this[name] as inputMsg.ExtendedMsgFn | string;
+    } else {
+      extendedMsgExpression = this.defaultConfig.msg[name] as inputMsg.ExtendedMsgFn | string;
+    }
+    if (isFn(extendedMsgExpression)) {
+      this.messages[name] = extendedMsgExpression(this.inputParams.label, this.inputParams.validationParams[name] as number);
+    } else {
+      this.messages[name] = extendedMsgExpression;
+    }
+
   }
 
 }

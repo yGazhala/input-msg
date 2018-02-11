@@ -372,7 +372,7 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
 
     const options = validationParamOptions[this.elemType] as inputMsg.ValidationParamOption[];
     options.forEach((param) => {
-      const checker = param.type === 'boolean' ? this.hasBoolaenParam : this.hasNumberParam;
+      const checker = param.type === 'boolean' ? this.hasBoolaenParam.bind(this) : this.hasNumberParam.bind(this);
       if (!checker(param.name)) {
         return;
       }

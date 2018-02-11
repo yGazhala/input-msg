@@ -1,18 +1,9 @@
 import { Injectable } from '@angular/core';
 
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-
 import { inputMsg } from './types';
 
 @Injectable()
 export class InputMsgService {
-
-  /**
-   * Supported validation params
-   */
-  public readonly validationParams: inputMsg.ValidationParam[] = [
-    'email', 'integer', 'max', 'maxlength', 'min', 'minlength', 'required'
-  ];
 
   private defaultConfig: inputMsg.Config = {
     position: 'bottom-left',
