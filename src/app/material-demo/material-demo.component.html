@@ -1,4 +1,3 @@
-<button (click)="test()">Test</button>
 <form class="form" #form="ngForm" novalidate
   (ngSubmit)="onSubmit(form)"
   >
@@ -17,9 +16,9 @@
              name="userName"
              #nameModel="ngModel" 
              [model]="nameModel"
-             [required]="required" 
-             [minlength]="minlength"
-             [maxlength]="maxlength"
+             required="required" 
+             minlength="2"
+             maxlength="10"
         >
     </mat-form-field>
     <g-msg for="userName"></g-msg>
@@ -44,11 +43,32 @@
     </mat-form-field>
     <g-msg for="email"></g-msg>
   </div>
+
+  <div class="form-field-wrap">
+    <p class="form-field-desc">
+      3) Password input.<br>Validation params: required, minlength=6, pattern.
+    </p>
+    
+    <mat-form-field>
+      <input type="password"  
+             gInput matInput 
+             placeholder="Password"
+             [(ngModel)]="data.password" 
+             name="password"
+             #passwordModel="ngModel" 
+             [model]="passwordModel"
+             required
+             minlength="6"
+             [pattern]="passwordRegExp"
+        >
+    </mat-form-field>
+    <g-msg for="password" [pattern]="weakPasswordMsg"></g-msg>
+  </div>
   
   <div class="form-field-wrap">
 
     <p class="form-field-desc">
-      3) Number input.<br>Validation params: integer, min=1, max=100.
+      4) Number input.<br>Validation params: required, integer, min=1, max=100.
     </p>
     
     <mat-form-field>
@@ -71,7 +91,7 @@
   <div class="form-field-wrap">
 
     <p class="form-field-desc">
-      4) Text area.<br>Validation params: required, maxlength="20".
+      5) Text area.<br>Validation params: required, maxlength="20".
     </p>
 
     <mat-form-field>

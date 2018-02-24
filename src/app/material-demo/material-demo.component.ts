@@ -11,13 +11,12 @@ export class MaterialDemoComponent {
   public data = {
     email: '',
     name: '',
+    password: '',
     quantity: undefined,
     comment: ''
   };
-
-  required = true;
-  minlength = 3;
-  maxlength = 10;
+  public passwordRegExp: RegExp = /(?=.*\d)(?=.*[a-z])/i;
+  public weakPasswordMsg = 'Must contain numbers and letters';
 
   public onSubmit(form: NgForm): void {
     if (form.invalid) {
@@ -28,15 +27,10 @@ export class MaterialDemoComponent {
       `Form has been submitted:
         name: ${this.data.name},
         email: ${this.data.email},
+        password: ${this.data.password},
         quantity: ${this.data.quantity},
         comment: ${this.data.comment}
     `);
-  }
-
-  public test(): void {
-    // this.required = false;
-    this.minlength = 2;
-    this.maxlength = 5;
   }
 
 }

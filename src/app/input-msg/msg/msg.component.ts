@@ -44,6 +44,7 @@ export class MsgComponent implements OnInit, OnChanges, OnDestroy {
   @Input() public maxlength: string | inputMsg.ExtendedMsgFn;
   @Input() public min: string | inputMsg.ExtendedMsgFn;
   @Input() public minlength: string | inputMsg.ExtendedMsgFn;
+  @Input() public pattern: string | inputMsg.MsgFn;
   @Input() public position: inputMsg.Position;
   @Input() public required: string | inputMsg.MsgFn;
 
@@ -193,7 +194,7 @@ export class MsgComponent implements OnInit, OnChanges, OnDestroy {
     };
 
     // validation params with inputMsg.MsgFn type support
-    const msgFnSupport = ['email', 'integer', 'required'];
+    const msgFnSupport = ['email', 'integer', 'required', 'pattern'];
 
     // set a message generated from MsgFn() or as a simle string
     if (msgFnSupport.indexOf(name) !== -1) {

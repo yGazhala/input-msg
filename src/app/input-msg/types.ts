@@ -23,6 +23,7 @@ export declare module inputMsg {
       min?: string | ExtendedMsgFn;
       maxlength?: string | ExtendedMsgFn;
       minlength?: string | ExtendedMsgFn;
+      pattern?: string | MsgFn;
       required?: string | MsgFn;
     };
   }
@@ -43,6 +44,7 @@ export declare module inputMsg {
       maxlength?: number;
       min?: number;
       minlength?: number;
+      pattern?: boolean;
       required?: boolean;
     };
   }
@@ -61,6 +63,7 @@ export declare module inputMsg {
     maxlength?: string;
     min?: string;
     minlength?: string;
+    pattern?: string;
     required?: string;
   }
 
@@ -82,7 +85,8 @@ export declare module inputMsg {
 
   interface ValidationParamOption {
     name: ValidatorName;
-    type: 'boolean' | 'number' | 'default';
+    type: 'boolean' | 'number' | 'RegExp' | 'default';
+    compareWith?: any;
   }
 
 }

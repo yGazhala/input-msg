@@ -56,7 +56,7 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
   @Input() public minlength: string | number;
   @Input() public model: NgModel;
   @Input() public name: string;
-  // @Input() public pattern: RegExp;
+  @Input() public pattern: RegExp;
   @Input() public placeholder: string;
   @Input() public required: '' | boolean;
   @Input() public type: inputMsg.SupportedInputType = 'text'; // default
@@ -108,7 +108,7 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
       this.setValidationParams();
       this.inputParams.paramChange.next(name as inputMsg.ValidatorName);
       this.createValidator();
-      this.validate(this.model.control);
+      this.model.control.updateValueAndValidity();
     });
   }
 
@@ -162,6 +162,11 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
       }
     });
 
+    if (this.type === 'password') {
+      console.log(this.inputParams);
+      console.log(validators); 
+    }
+
     this.validator = this.validatorFactory.create(this.elemType, validators);
   }
 
@@ -171,6 +176,10 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
 
   private hasNumberParam(name: string): boolean {
     return !isNaN(this[name]) && isFinite(this[name]);
+  }
+
+  private hasRegExpParam(name: string): boolean {
+    return this[name] instanceof RegExp;
   }
 
   private initElemType(): void {
@@ -266,41 +275,42 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
       textLike: [
         { name: 'required', type: 'boolean' },
         { name: 'minlength', type: 'number' },
-        { name: 'maxlength', type: 'number' }
+        { name: 'maxlength', type: 'number' },
+        { name: 'pattern', type: 'RegExp' }
       ]
     };
 
     validationParamOptions[this.elemType].forEach((param) => {
 
-      // Returns true if a given validatior was set
-      let hasParam: (validatorName: inputMsg.ValidatorName) => boolean;
       switch (param.type) {
         case 'boolean':
-          hasParam = this.hasBoolaenParam.bind(this);
+          if (this.hasBoolaenParam(param.name)) {
+            this.inputParams.validationParams[param.name] = true;
+            this.validationParams.push(param.name);
+          }
           break;
         case 'number':
-          hasParam = this.hasNumberParam.bind(this);
+          if (this.hasNumberParam(param.name)) {
+            this.inputParams.validationParams[param.name] = +this[param.name];
+            this.validationParams.push(param.name);
+          }
+          break;
+        case 'RegExp':
+          if (this.hasRegExpParam(param.name)) {
+            this.inputParams.validationParams[param.name] = true;
+            this.validationParams.push(param.name);
+          }
           break;
         case 'default':
           // default validator is always present
           // within an input, for example:
           // <input type="email"> has default validator 'email'
-          hasParam = () => true;
+          this.inputParams.validationParams[param.name] = true;
+          this.validationParams.push(param.name);
           break;
         default:
-          hasParam = () => false;
           console.error('Unsuported validationParamOption:', param);
       }
-
-      if (!hasParam(param.name)) {
-        return;
-      }
-      if (param.type === 'number') {
-        this.inputParams.validationParams[param.name] = +this[param.name];
-      } else {
-        this.inputParams.validationParams[param.name] = true;
-      }
-      this.validationParams.push(param.name);
     });
   }
 
