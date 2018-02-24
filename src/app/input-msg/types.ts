@@ -76,7 +76,7 @@ export declare module inputMsg {
 
   interface ValidatorConfig<T> {
     name: ValidatorName;
-    compareWith: T; // string | number | RegExp | undefined
+    compareWith: T; // number | RegExp | undefined
   }
 
   type ValidatorFn<T> = (value: string | number, compareWith?: T) => { [validatorName: string]: T } | null;
@@ -86,7 +86,6 @@ export declare module inputMsg {
   interface ValidationParamOption {
     name: ValidatorName;
     type: 'boolean' | 'number' | 'RegExp' | 'default';
-    compareWith?: any;
   }
 
 }

@@ -72,7 +72,7 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
   private prevValid: boolean;
   private statusSubscriptions: Subscription[] = [];
   // the current validation params of this input
-  private validationParams: inputMsg.ValidatorName[] = [];
+  private validationParams: inputMsg.ValidatorConfig<any>[];
   private validator: InputValidator;
 
   constructor(
@@ -91,7 +91,8 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
       max: true,
       min: true,
       maxlength: true,
-      minlength: true
+      minlength: true,
+      pattern: true
     };
 
     Object.keys(changes).forEach((name) => {
@@ -134,8 +135,8 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
 
     this.initInputParams();
     this.setValidationParams();
-    this.inputStorageService.set(this.inputParams, this.id, this.name);
     this.createValidator();
+    this.inputStorageService.set(this.inputParams, this.id, this.name);
 
     // Wait till NgForm will be initialized
     setTimeout(() => {
@@ -152,20 +153,9 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
   private createValidator(): void {
 
     const validators: { [validator: string]: inputMsg.ValidatorConfig<any> } = {};
-    Object.keys(this.inputParams.validationParams).forEach((key: inputMsg.ValidatorName) => {
-      validators[key] = {
-        name: key,
-        compareWith: undefined
-      };
-      if (typeof this.inputParams.validationParams[key] !== 'boolean') {
-        validators[key].compareWith = this.inputParams.validationParams[key];
-      }
+    this.validationParams.forEach(param => {
+      validators[param.name] = param;
     });
-
-    if (this.type === 'password') {
-      console.log(this.inputParams);
-      console.log(validators); 
-    }
 
     this.validator = this.validatorFactory.create(this.elemType, validators);
   }
@@ -286,19 +276,28 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
         case 'boolean':
           if (this.hasBoolaenParam(param.name)) {
             this.inputParams.validationParams[param.name] = true;
-            this.validationParams.push(param.name);
+            this.validationParams.push({
+              name: param.name,
+              compareWith: undefined
+            });
           }
           break;
         case 'number':
           if (this.hasNumberParam(param.name)) {
             this.inputParams.validationParams[param.name] = +this[param.name];
-            this.validationParams.push(param.name);
+            this.validationParams.push({
+              name: param.name,
+              compareWith: +this[param.name]
+            });
           }
           break;
         case 'RegExp':
           if (this.hasRegExpParam(param.name)) {
             this.inputParams.validationParams[param.name] = true;
-            this.validationParams.push(param.name);
+            this.validationParams.push({
+              name: param.name,
+              compareWith: this[param.name]
+            });
           }
           break;
         case 'default':
@@ -306,7 +305,10 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
           // within an input, for example:
           // <input type="email"> has default validator 'email'
           this.inputParams.validationParams[param.name] = true;
-          this.validationParams.push(param.name);
+          this.validationParams.push({
+            name: param.name,
+            compareWith: undefined
+          });
           break;
         default:
           console.error('Unsuported validationParamOption:', param);
@@ -325,10 +327,10 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
   private statusOn(): void {
     // Emits an error status if the input is invalid.
     const emitErrorStatus = (): void => {
-      for (const errName of this.validationParams) {
-        if (this.elemModel.hasError(errName)) {
+      for (const param of this.validationParams) {
+        if (this.elemModel.hasError(param.name)) {
           this.inputParams.valid.next(false);
-          this.inputParams.status.next(errName);
+          this.inputParams.status.next(param.name);
           return;
         }
       }
