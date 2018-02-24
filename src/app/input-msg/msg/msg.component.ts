@@ -34,7 +34,6 @@ export class MsgComponent implements OnInit, OnChanges, OnDestroy {
    * Use for param instead.
    */
   @Input() public inputName: string;
-
   /**
    * Optional params with custom messages
    * that overwrite the default ones
@@ -93,7 +92,7 @@ export class MsgComponent implements OnInit, OnChanges, OnDestroy {
       if (!changeableProps[name] || changes[name].isFirstChange()) {
         return;
       }
-      this.setMessage(name as inputMsg.ValidationParam);
+      this.setMessage(name as inputMsg.ValidatorName);
 
       // update currentMsg if it has been changed
       // and the input is invalid
@@ -136,12 +135,12 @@ export class MsgComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   // Updates messages when input params change
-  private onInputParamsChange(changedPropName: 'label' | inputMsg.ValidationParam): void {
+  private onInputParamsChange(changedPropName: 'label' | inputMsg.ValidatorName): void {
 
     if (changedPropName === 'label') {
       this.setAllMessages();
     } else {
-      this.setMessage(changedPropName as inputMsg.ValidationParam);
+      this.setMessage(changedPropName as inputMsg.ValidatorName);
     }
 
     // update current msg if the input is invalid
@@ -174,7 +173,7 @@ export class MsgComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private setAllMessages(): void {
-    Object.keys(this.inputParams.validationParams).forEach((name: inputMsg.ValidationParam) => {
+    Object.keys(this.inputParams.validationParams).forEach((name: inputMsg.ValidatorName) => {
       this.setMessage(name);
     });
   }
@@ -182,7 +181,7 @@ export class MsgComponent implements OnInit, OnChanges, OnDestroy {
   // Sets message text for a given validation parameter.
   // If appropriate message expression is not provided
   // throgh @Input() binding - the default one is used instead.
-  private setMessage(name: inputMsg.ValidationParam): void {
+  private setMessage(name: inputMsg.ValidatorName): void {
 
     if (typeof this.inputParams.validationParams[name] === 'undefined') {
       return;

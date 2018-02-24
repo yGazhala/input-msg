@@ -5,6 +5,7 @@
  * See: https://github.com/angular/angular-cli/issues/4874
  */
 
+import { AbstractControl } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Subject } from 'rxjs/Subject';
 
@@ -32,7 +33,7 @@ export declare module inputMsg {
     label?: string;
     // contains true if there is a Material Design input
     material: boolean;
-    paramChange: Subject<'label' | ValidationParam>;
+    paramChange: Subject<'label' | ValidatorName>;
     status: BehaviorSubject<InputStatus>;
     valid: BehaviorSubject<boolean>;
     validationParams: {
@@ -46,7 +47,7 @@ export declare module inputMsg {
     };
   }
 
-  type InputStatus = 'pristine' | 'valid' | ValidationParam;
+  type InputStatus = 'pristine' | 'valid' | ValidatorName;
 
   type MsgFn = (placeholder: string) => string;
 
@@ -65,10 +66,23 @@ export declare module inputMsg {
 
   type SupportedInputType = 'email' | 'text' | 'password' | 'number';
 
-  type ValidationParam = 'email' | 'integer' | 'max' | 'maxlength' | 'min' | 'minlength' | 'required';
+  interface Validator<T> {
+    validate: ValidatorFn<T>;
+    compareWith: T;
+  }
+
+  interface ValidatorConfig<T> {
+    name: ValidatorName;
+    compareWith: T; // string | number | RegExp | undefined
+  }
+
+  type ValidatorFn<T> = (value: string | number, compareWith?: T) => { [validatorName: string]: T } | null;
+
+  type ValidatorName = 'email' | 'integer' | 'max' | 'maxlength' | 'min' | 'minlength' | 'pattern' | 'required';
 
   interface ValidationParamOption {
-    name: ValidationParam;
-    type: 'boolean' | 'number';
+    name: ValidatorName;
+    type: 'boolean' | 'number' | 'default';
   }
+
 }

@@ -7,10 +7,11 @@ import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/observable/fromEvent';
 
-import { InputMsgService } from '../input-msg.service';
 import { InputStorageService } from '../input-storage.service';
-import { InputValidator } from '../input-validator.service';
+import { InputValidatorFactory } from './input-validator-factory.service';
 
+// types
+import { InputValidator } from './validators/input-validator';
 import { inputMsg } from '../types';
 
 /**
@@ -22,7 +23,12 @@ import { inputMsg } from '../types';
 @Directive({
   selector: 'input[gInput], textarea[gInput]',
   providers: [
-    { provide: NG_VALIDATORS, useExisting: InputDirective, multi: true }
+    {
+      provide: NG_VALIDATORS,
+      useExisting: InputDirective,
+      multi: true
+    },
+    InputValidatorFactory
   ]
 })
 
@@ -33,6 +39,7 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
    * DEPRECATED.
    * Use model insted.
    */
+  // tslint:disable-next-line:no-input-rename
   @Input('gInput') public inputModel: NgModel;
   @Input() public integer: '' | boolean;
   @Input() public label: string;
@@ -49,6 +56,7 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
   @Input() public minlength: string | number;
   @Input() public model: NgModel;
   @Input() public name: string;
+  // @Input() public pattern: RegExp;
   @Input() public placeholder: string;
   @Input() public required: '' | boolean;
   @Input() public type: inputMsg.SupportedInputType = 'text'; // default
@@ -64,13 +72,13 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
   private prevValid: boolean;
   private statusSubscriptions: Subscription[] = [];
   // the current validation params of this input
-  private validationParams: inputMsg.ValidationParam[] = [];
+  private validationParams: inputMsg.ValidatorName[] = [];
+  private validator: InputValidator;
 
   constructor(
     private elemRef: ElementRef,
-    private inputMsgService: InputMsgService,
     private inputStorageService: InputStorageService,
-    private validator: InputValidator
+    private validatorFactory: InputValidatorFactory
   ) { }
 
   public ngOnChanges(changes: { [prop: string]: SimpleChange }): void {
@@ -87,7 +95,6 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
     };
 
     Object.keys(changes).forEach((name) => {
-
       if (!changeableProps[name] || changes[name].isFirstChange()) {
         return;
       }
@@ -99,7 +106,9 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
       }
 
       this.setValidationParams();
-      this.inputParams.paramChange.next(name as inputMsg.ValidationParam);
+      this.inputParams.paramChange.next(name as inputMsg.ValidatorName);
+      this.createValidator();
+      this.validate(this.model.control);
     });
   }
 
@@ -121,10 +130,12 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
       throw new Error('gInput directive: id or name attribute is required');
     }
 
+    this.setMatFormFieldClass();
+
     this.initInputParams();
     this.setValidationParams();
     this.inputStorageService.set(this.inputParams, this.id, this.name);
-    this.setMatFormFieldClass();
+    this.createValidator();
 
     // Wait till NgForm will be initialized
     setTimeout(() => {
@@ -133,136 +144,25 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
     }, 0);
   }
 
-  /**
-   * Stops generating the input status
-   */
-  public statusOff(): void {
-    this.statusSubscriptions.forEach((sub) => {
-      sub.unsubscribe();
+  public validate(control: AbstractControl): { [validatorName: string]: any } | null {
+    return this.validator.validate(control);
+  }
+
+
+  private createValidator(): void {
+
+    const validators: { [validator: string]: inputMsg.ValidatorConfig<any> } = {};
+    Object.keys(this.inputParams.validationParams).forEach((key: inputMsg.ValidatorName) => {
+      validators[key] = {
+        name: key,
+        compareWith: undefined
+      };
+      if (typeof this.inputParams.validationParams[key] !== 'boolean') {
+        validators[key].compareWith = this.inputParams.validationParams[key];
+      }
     });
-  }
 
-  /**
-   * Starts generating the input status
-   */
-  public statusOn(): void {
-
-    // Emits an error status if the input is invalid.
-    const emitErrorStatus = (): void => {
-      for (const errName of this.validationParams) {
-        if (this.elemModel.hasError(errName)) {
-          this.inputParams.valid.next(false);
-          this.inputParams.status.next(errName);
-          return;
-        }
-      }
-    };
-
-    const emitErrorStatusOnTouched = (): void => {
-      if (this.elemModel.touched || this.form.submitted) {
-        emitErrorStatus();
-      }
-    };
-
-    const emitValidAndPristineStatus = (status: string): void => {
-      switch (status) {
-        case 'INVALID':
-          this.prevValid = false;
-          break;
-        case 'VALID':
-          if (!this.prevValid) {
-            this.inputParams.valid.next(true);
-            this.inputParams.status.next('valid');
-          }
-          this.prevValid = true;
-          break;
-        case 'PRISTINE':
-          this.inputParams.valid.next(true);
-          this.inputParams.status.next('pristine');
-          break;
-        default:
-          return;
-      }
-    };
-
-    const emitMaxLengthStatus = (): void => {
-      if (this.elemModel.value.length === +this.maxlength) {
-        this.inputParams.status.next('maxlength');
-      }
-    };
-
-    const blurSub: Subscription = Observable
-      .fromEvent(this.elem, 'blur')
-      .subscribe(emitErrorStatusOnTouched);
-    this.statusSubscriptions.push(blurSub);
-
-    const controlValueSub: Subscription = this.elemModel.valueChanges
-      .subscribe(emitErrorStatusOnTouched);
-    this.statusSubscriptions.push(controlValueSub);
-
-    const formSubmitSub: Subscription = this.form.ngSubmit
-      .subscribe(emitErrorStatus);
-    this.statusSubscriptions.push(formSubmitSub);
-
-    const controlStatusSub: Subscription = this.elemModel.statusChanges
-      .subscribe(emitValidAndPristineStatus);
-    this.statusSubscriptions.push(controlStatusSub);
-
-    if (this.hasNumberParam('maxlength')) {
-      const controlValueLengthSub: Subscription = this.elemModel.valueChanges
-        .subscribe(emitMaxLengthStatus);
-      this.statusSubscriptions.push(controlValueLengthSub);
-    }
-
-    // Adds/removes 'g-input_invalid' class to the input
-    const toggleClassOnValidChange = (valid: boolean): void => {
-      if (valid) {
-        this.elem.classList.remove('g-input_invalid');
-      } else {
-        this.elem.classList.add('g-input_invalid');
-      }
-    };
-    const validSub: Subscription = this.inputParams.valid
-      .subscribe(toggleClassOnValidChange);
-    this.statusSubscriptions.push(validSub);
-
-  }
-
-  /**
-   * Validates the input elem if these
-   * validation params were set:
-   * 'email', 'integer', 'max', 'min'.
-   *
-   * Note, 'required', 'minlength' and 'maxlength'
-   * validators are already supported by Angular.
-   */
-  public validate(control: AbstractControl): { [key: string]: any } {
-
-    if (this.elemType === 'email') {
-      return this.validator.email(control.value);
-    }
-
-    if (this.elemType === 'number') {
-
-      if (this.hasBoolaenParam('integer')) {
-        const isInvalid = this.validator.integer(control.value);
-        if (isInvalid) {
-          return isInvalid;
-        }
-      }
-      if (this.hasNumberParam('min') && this.hasNumberParam('max')) {
-        const isMinInvalid = this.validator.min(control.value, +this.min);
-        if (isMinInvalid) {
-          return isMinInvalid;
-        }
-        return this.validator.max(control.value, +this.max);
-      }
-      if (this.hasNumberParam('min') && !this.hasNumberParam('max')) {
-        return this.validator.min(control.value, + this.min);
-      }
-      // only 'max' param is set
-      return this.validator.max(control.value, + this.max);
-    }
+    this.validator = this.validatorFactory.create(this.elemType, validators);
   }
 
   private hasBoolaenParam(name: string): boolean {
@@ -270,7 +170,7 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
   }
 
   private hasNumberParam(name: string): boolean {
-    return this.validator.isNumber(this[name]);
+    return !isNaN(this[name]) && isFinite(this[name]);
   }
 
   private initElemType(): void {
@@ -352,10 +252,10 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
     this.validationParams = [];
 
     // Available validation params for each supported input type
-    const validationParamOptions = {
+    const validationParamOptions: { [key: string]: inputMsg.ValidationParamOption[] } = {
       email: [
         { name: 'required', type: 'boolean' },
-        { name: 'email', type: 'boolean' }
+        { name: 'email', type: 'default' }
       ],
       number: [
         { name: 'required', type: 'boolean' },
@@ -370,19 +270,127 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
       ]
     };
 
-    const options = validationParamOptions[this.elemType] as inputMsg.ValidationParamOption[];
-    options.forEach((param) => {
-      const checker = param.type === 'boolean' ? this.hasBoolaenParam.bind(this) : this.hasNumberParam.bind(this);
-      if (!checker(param.name)) {
+    validationParamOptions[this.elemType].forEach((param) => {
+
+      // Returns true if a given validatior was set
+      let hasParam: (validatorName: inputMsg.ValidatorName) => boolean;
+      switch (param.type) {
+        case 'boolean':
+          hasParam = this.hasBoolaenParam.bind(this);
+          break;
+        case 'number':
+          hasParam = this.hasNumberParam.bind(this);
+          break;
+        case 'default':
+          // default validator is always present
+          // within an input, for example:
+          // <input type="email"> has default validator 'email'
+          hasParam = () => true;
+          break;
+        default:
+          hasParam = () => false;
+          console.error('Unsuported validationParamOption:', param);
+      }
+
+      if (!hasParam(param.name)) {
         return;
       }
-      if (param.type === 'boolean') {
-        this.inputParams.validationParams[param.name] = true;
-      } else {
+      if (param.type === 'number') {
         this.inputParams.validationParams[param.name] = +this[param.name];
+      } else {
+        this.inputParams.validationParams[param.name] = true;
       }
       this.validationParams.push(param.name);
     });
+  }
+
+  // Stops generating the input status
+  private statusOff(): void {
+    this.statusSubscriptions.forEach((sub) => {
+      sub.unsubscribe();
+    });
+  }
+
+  // Starts generating the input status
+  private statusOn(): void {
+    // Emits an error status if the input is invalid.
+    const emitErrorStatus = (): void => {
+      for (const errName of this.validationParams) {
+        if (this.elemModel.hasError(errName)) {
+          this.inputParams.valid.next(false);
+          this.inputParams.status.next(errName);
+          return;
+        }
+      }
+    };
+
+    const emitErrorStatusOnTouched = (): void => {
+      if (this.elemModel.touched || this.form.submitted) {
+        emitErrorStatus();
+      }
+    };
+
+    const emitValidAndPristineStatus = (status: string): void => {
+      switch (status) {
+        case 'INVALID':
+          this.prevValid = false;
+          break;
+        case 'VALID':
+          if (!this.prevValid) {
+            this.inputParams.valid.next(true);
+            this.inputParams.status.next('valid');
+          }
+          this.prevValid = true;
+          break;
+        case 'PRISTINE':
+          this.inputParams.valid.next(true);
+          this.inputParams.status.next('pristine');
+          break;
+        default:
+          return;
+      }
+    };
+
+    const emitMaxLengthStatus = (): void => {
+      if (this.elemModel.value.length === +this.maxlength) {
+        this.inputParams.status.next('maxlength');
+      }
+    };
+
+    const blurSub: Subscription = Observable
+      .fromEvent(this.elem, 'blur')
+      .subscribe(emitErrorStatusOnTouched);
+    this.statusSubscriptions.push(blurSub);
+
+    const controlValueSub: Subscription = this.elemModel.valueChanges
+      .subscribe(emitErrorStatusOnTouched);
+    this.statusSubscriptions.push(controlValueSub);
+
+    const formSubmitSub: Subscription = this.form.ngSubmit
+      .subscribe(emitErrorStatus);
+    this.statusSubscriptions.push(formSubmitSub);
+
+    const controlStatusSub: Subscription = this.elemModel.statusChanges
+      .subscribe(emitValidAndPristineStatus);
+    this.statusSubscriptions.push(controlStatusSub);
+
+    if (this.hasNumberParam('maxlength')) {
+      const controlValueLengthSub: Subscription = this.elemModel.valueChanges
+        .subscribe(emitMaxLengthStatus);
+      this.statusSubscriptions.push(controlValueLengthSub);
+    }
+
+    // Adds/removes 'g-input_invalid' class to the input
+    const toggleClassOnValidChange = (valid: boolean): void => {
+      if (valid) {
+        this.elem.classList.remove('g-input_invalid');
+      } else {
+        this.elem.classList.add('g-input_invalid');
+      }
+    };
+    const validSub: Subscription = this.inputParams.valid
+      .subscribe(toggleClassOnValidChange);
+    this.statusSubscriptions.push(validSub);
 
   }
 
