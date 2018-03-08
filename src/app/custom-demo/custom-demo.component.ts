@@ -11,9 +11,12 @@ export class CustomDemoComponent {
   public data = {
     email: '',
     name: '',
+    password: '',
     quantity: undefined,
     comment: ''
   };
+  public passwordRegExp: RegExp = /(?=.*\d)(?=.*[a-z])/i;
+  public weakPasswordMsg = 'Must contain numbers and letters';
 
   public onSubmit(form: NgForm): void {
     if (form.invalid) {
@@ -24,6 +27,7 @@ export class CustomDemoComponent {
       `Form has been submitted:
         name: ${this.data.name},
         email: ${this.data.email},
+        password: ${this.data.password},
         quantity: ${this.data.quantity},
         comment: ${this.data.comment}
     `);

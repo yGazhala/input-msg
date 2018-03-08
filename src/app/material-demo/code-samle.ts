@@ -58,7 +58,32 @@ let template = `
     <div class="form-field-wrap">
 
       <p class="form-field-desc">
-        3) Number input. Validation params: integer, min=1, max=100.
+        3) Password input. Validation params: required, minlength=6, pattern.
+      </p>
+
+      <mat-form-field>
+        <input type="password"
+               matInput
+               placeholder="Password"
+               [(ngModel)]="data.password"
+               name="password"
+               #passwordModel="ngModel"
+               gInput
+               [model]="passwordModel"
+               required
+               minlength="6"
+               [pattern]="passwordRegExp"
+          >
+      </mat-form-field>
+
+      <g-msg for="password" [pattern]="weakPasswordMsg"></g-msg>
+
+    </div>
+
+    <div class="form-field-wrap">
+
+      <p class="form-field-desc">
+        4) Number input. Validation params: integer, min=1, max=100.
       </p>
 
       <mat-form-field>
@@ -83,7 +108,7 @@ let template = `
     <div class="form-field-wrap">
 
       <p class="form-field-desc">
-        4) Text area. Validation params: required, maxlength="20".
+        5) Text area. Validation params: required, maxlength="20".
       </p>
 
       <mat-form-field>
@@ -138,9 +163,12 @@ export const demoComponent = `
         public data = {
           email: '',
           name: '',
+          password: '',
           quantity: undefined,
           comment: ''
         };
+        public passwordRegExp: RegExp = /(?=.*\d)(?=.*[a-z])/i;
+        public weakPasswordMsg = 'Must contain numbers and letters';
 
         public onSubmit(form: NgForm): void {
           if (form.invalid) {

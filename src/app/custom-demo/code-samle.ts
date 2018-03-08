@@ -60,7 +60,30 @@ let template = `
     <div class="form-field-wrap">
 
       <p class="form-field-desc">
-        3) Number input. Validation params: integer, min=1, max=100.
+        3) Password input. Validation params: required, minlength=6, pattern.
+      </p>
+
+      <input class="custom-input"
+             type="password"
+             gInput
+             placeholder="Password"
+             name="password"
+             [(ngModel)]="data.password"
+             #passwordModel="ngModel"
+             [model]="passwordModel"
+             required
+             minlength="6"
+             [pattern]="passwordRegExp"
+        >
+
+      <g-msg for="password" [pattern]="weakPasswordMsg"></g-msg>
+
+    </div>
+
+    <div class="form-field-wrap">
+
+      <p class="form-field-desc">
+        4) Number input. Validation params: integer, min=1, max=100.
       </p>
 
       <input class="custom-input"
@@ -83,7 +106,7 @@ let template = `
     <div class="form-field-wrap">
 
       <p class="form-field-desc">
-        4) Text area with label. Validation params: required, maxlength="20".
+        5) Text area with label. Validation params: required, maxlength="20".
       </p>
 
       <label class="custom-input-label"
