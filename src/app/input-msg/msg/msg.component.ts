@@ -2,7 +2,7 @@ import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChange, ViewEncap
 
 import { Subscription } from 'rxjs/Subscription';
 
-import { InputMsgService } from '../input-msg.service';
+import { InputMsgConfigService } from '../input-msg-config.service';
 import { InputStorageService } from '../input-storage.service';
 
 import { inputMsg } from '../types';
@@ -61,13 +61,13 @@ export class MsgComponent implements OnInit, OnChanges, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   constructor(
-    private inputMsgService: InputMsgService,
-    private inputStorageService: InputStorageService
+    private configService: InputMsgConfigService,
+    private storageService: InputStorageService
   ) { }
 
   public getClasses(): { [name: string]: boolean } {
 
-    const position: 'bottom-left' | 'bottom-right' = this.position || this.inputMsgService.config.position;
+    const position: 'bottom-left' | 'bottom-right' = this.position || this.configService.get().position;
     return {
       'g-msg_pos_bottom-left': position === 'bottom-left',
       'g-msg_pos_bottom-right': position === 'bottom-right',
@@ -109,14 +109,14 @@ export class MsgComponent implements OnInit, OnChanges, OnDestroy {
 
   public ngOnInit(): void {
 
-    this.defaultConfig = this.inputMsgService.config;
+    this.defaultConfig = this.configService.get();
 
     this.inputKey = this.for || this.inputId || this.inputName;
     if (!this.inputKey) {
       throw new Error('gMsg component: \'for\' parameter with the input id or name must be provided.');
     }
 
-    this.inputParams = this.inputStorageService.get(this.inputKey);
+    this.inputParams = this.storageService.get(this.inputKey);
     if (!this.inputParams) {
       throw new Error(`gMsg component: can\'t find the input element with id or name: ${this.inputKey}`);
     }

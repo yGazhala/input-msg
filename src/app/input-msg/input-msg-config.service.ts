@@ -2,8 +2,11 @@ import { Injectable } from '@angular/core';
 
 import { inputMsg } from './types';
 
+/**
+ * Provides configuration for displaying messages.
+ */
 @Injectable()
-export class InputMsgService {
+export class InputMsgConfigService {
 
   private defaultConfig: inputMsg.Config = {
     position: 'bottom-left',
@@ -19,11 +22,11 @@ export class InputMsgService {
     }
   };
 
-  public get config(): inputMsg.Config {
+  public get(): inputMsg.Config {
     return this.defaultConfig;
   }
 
-  public set config(config: inputMsg.Config) {
+  public set(config: inputMsg.Config) {
 
     Object.keys(config).forEach((key: string) => {
       this.defaultConfig = config[key];
