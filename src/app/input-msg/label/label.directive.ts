@@ -2,6 +2,7 @@ import { Directive, Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
+import { InputMsgConfigService } from '../input-msg-config.service';
 import { InputStorageService } from '../input-storage.service';
 
 import { inputMsg } from '../types';
@@ -21,9 +22,11 @@ export class LabelDirective implements OnInit, OnDestroy {
   @Input() public for: string;
 
   private elem: HTMLLabelElement;
+  private highlightColor: string;
   private valid: BehaviorSubject<boolean>;
 
   constructor(
+    private configService: InputMsgConfigService,
     private elemRef: ElementRef,
     private inputStorageService: InputStorageService
   ) { }
@@ -37,6 +40,7 @@ export class LabelDirective implements OnInit, OnDestroy {
   public ngOnInit(): void {
 
     this.elem = this.elemRef.nativeElement;
+    this.highlightColor = this.configService.get().colors.error;
 
     if (!this.for) {
       throw new Error('gLabel directive: \'for\' attribute with input id or name is required.');
@@ -52,9 +56,22 @@ export class LabelDirective implements OnInit, OnDestroy {
       if (!inputParams) {
         throw new Error(`gLabel directive: can\'t find the input element with id or name: ${this.for}`);
       }
+
       this.valid = inputParams.valid;
-      this.valid.subscribe(this.toggleClassOnValidChange.bind(this));
+      this.valid.subscribe((valid: boolean) => {
+        this.toggleClassOnValidChange(valid);
+        this.highlightOnValidChange(valid);
+      });
+
     }, 0);
+  }
+
+  private highlightOnValidChange(valid: boolean): void {
+    if (valid) {
+      this.elem.style.color = '';
+    } else {
+      this.elem.style.color = this.highlightColor;
+    }
   }
 
   private setAnimation(): void {

@@ -13,8 +13,11 @@ export declare module inputMsg {
 
   type AggregatedInputType = 'email' | 'number' | 'textLike';
 
-  // Message config
   interface Config {
+    colors?: {
+      error?: string;
+      maxlength?: string;
+    };
     position?: Position;
     msg?: {
       email?: string | MsgFn;

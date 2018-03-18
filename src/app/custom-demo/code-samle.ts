@@ -182,9 +182,6 @@ export const customDemoScss = `
       .custom-input-label {
         font-size: 12px;
         color: grey;
-        &.g-input_invalid {
-          color: #f44336;
-        }
       }
     </code>
   </pre>`;

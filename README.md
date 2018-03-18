@@ -20,12 +20,52 @@ This project is inspired by AngularJS ng-messages module.
 
 1. Copy `./src/app/input-msg` folder to your project.
 
-2. Import `InputMsgModule` to your feature module as any other Angular module as usual.
+2. Import `InputMsgModule` to your feature module. Note, `InputMsgModule` depends on `BrowserAnimationsModule`, so `BrowserAnimationsModule` should be imported to `app.module.ts`.
 
-3. Inside a `<form>` element, add `gInput` directive to an input element, then append `<g-msg>` component to show error messages. See [Demo](https://ygazhala.github.io/input-msg)
+```typescript
+// feature.module.ts example
+import { NgModule } from '@angular/core';
+import { InputMsgModule } from 'app/src/input-msg/input-msg.module';
+
+@NgModule({
+  imports: [
+    InputMsgModule
+  ],
+  declarations: [],
+  providers: []
+})
+export class FeatureModule { }
+
+
+// app.module.ts example
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgModule } from '@angular/core';
+
+import { FeatureModule } from 'app/src/feature-module/feature.module.ts'
+
+import { AppComponent } from './app.component';
+
+@NgModule({
+  imports: [
+    BrowserAnimationsModule,
+    BrowserModule,
+    FeatureModule
+  ],
+  declarations: [
+    AppComponent
+  ],
+  providers: [],
+  bootstrap: [ AppComponent ]
+})
+export class AppModule { }
+```
+
+3. Provide [Angular Material](https://material.angular.io/) to the app, if you are going to use Material style inputs.
+
+4. Inside a `<form>` element, add `gInput` directive to an input element, then append `<g-msg>` component to show error messages. See [Demo](https://ygazhala.github.io/input-msg)
 
 ## API Reference
-
 
 ### **InputDirective**
 
@@ -33,33 +73,42 @@ Directive to validate an `<input>` or `<textarea>` element. It is also toggles `
 
 **Selector:** `gInput` 
 
-**@Input() Properties**
+**Required @Input() properties**
 
-Name | Supported `<input type="">` | Required | Reacts on changes | Description
---- | --- | --- | --- | ---
-id: *string* | all\* | Optional | false | Used to connect an input element with `<label>` element.
-integer: *boolean* | number | Optional | true | Checks if an input value is an integer
-label: *string* | all\* | Optional | true | An input label. Used to be shown inside an error message.
-max: *number* \| *string* | number | Optional | true | Checks if an input value does not exceed `max` value.
-maxlength: *number* \| *string* | text, password | Optional | true | Checks if an input value length does't exceed `maxlength` value.
-min: *number* \| *string* | number | Optional | true | Checks if an input value is not less than `min` value.
-minlength: *number* \| *string* | text, password | Optional | true | Checks if an input value length is more than `minlength` value.
-model: *NgModel* | all\* | Required | -- | An input model.
-name: *string* | all\* | Required | false |  Used to bind an input element with `NgForm` and `<g-msg>` component.
-pattern: *RegExp* | text, password | Optional | true | Checks if an input value matches with `pattern`
-placeholder: *string* | all\* | Optional | true | An alias for `label` property. Used to be shown inside an error message.
-required: *boolean* | all\* | Optional | true | Checks if an input value is not empty. 
-type: *string* | all\* | Required | false | Used to apply compatible validators. Supported Input Types: 'text', 'email', 'number' or 'password'. If 'email' type is set - input value would be validated as an email address.
+Note, these properties have not to be changed after an input element initializes.
+
+Name | Description
+--- | ---
+model: *NgModel* | An input NgModel instance.
+name: *string* |  An input name attribute.
+type: *string* | Used to apply compatible validators. Supported types: 'text', 'email', 'number' or 'password'. If 'email' type was set - input value would be validated as an email address.
+
+**Optional @Input() properties**
+
+Note, these properties (except `id`) react on changes, so you can change them after an input element initializes.
+
+Name | Supported `<input type="">` | Description
+--- | --- | ---
+id: *string* | all\* | Used to connect an input element with `<label>` element.
+integer: *boolean* | number | Checks if an input value is an integer
+label: *string* | all\* | An input label text. Used to be shown inside an error message.
+max: *number* \| *string* | number | Checks if an input value does not exceed `max` value.
+maxlength: *number* \| *string* | text, password | Checks if an input value length does't exceed `maxlength` value.
+min: *number* \| *string* | number | Checks if an input value is not less than `min` value.
+minlength: *number* \| *string* | text, password | Checks if an input value length is more than `minlength` value.
+pattern: *RegExp* | text, password | Checks if an input value matches with `pattern`
+placeholder: *string* | all\* | An alias for `label` property. Used to be shown inside an error message.
+required: *boolean* | all\* | Checks if an input value is not empty.
 
 > all\* means 'email', 'text', 'password' and 'number' types.  
 
 ### **LabelDirective**
 
-Highlights `<label>` element when a bound input is invalid.
+Highlights `<label>` element when a bound input is invalid. It is also toggles `g-input_invalid` CSS class when an input status changes.
 
 **Selector:** `gLabel` 
 
-**@Input() Properties**
+**@Input() properties**
 
 Name | Required | Description
 --- | --- | ---
@@ -72,7 +121,7 @@ Displays a message for an input element depending on it`s validation status. Onl
 
 **Selector:** `g-msg` 
 
-**@Input() Properties**
+**@Input() properties**
 
 Name | Required | Description
 --- | --- | ---
@@ -111,7 +160,15 @@ Provides configuration for displaying messages.
 
   
   interface Config {
+    colors?: {
+      // color to highlight <g-msg> and <label> elements when an input is invalid
+      error?: string;
+      // color to highlight <g-msg> element when max length was reached
+      maxlength?: string;
+    };
+    // Position to show a message
     position?: 'bottom-left' | 'bottom-right';
+    // Message texts
     msg?: {
       email?: string | MsgFn;
       integer?: string | MsgFn;
@@ -130,6 +187,10 @@ Provides configuration for displaying messages.
 
 ```typescript
   {
+    colors: {
+      error: '#f44336',
+      maxlength: 'grey'
+    },
     position: 'bottom-left',
     msg: {
       email: (label: string) => `Wrong ${label}`,

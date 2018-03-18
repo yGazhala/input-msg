@@ -9,6 +9,10 @@ import { inputMsg } from './types';
 export class InputMsgConfigService {
 
   private defaultConfig: inputMsg.Config = {
+    colors: {
+      error: '#f44336',
+      maxlength: 'grey'
+    },
     position: 'bottom-left',
     msg: {
       email: (label: string) => `Wrong ${label}`,
@@ -28,9 +32,18 @@ export class InputMsgConfigService {
 
   public set(config: inputMsg.Config) {
 
-    Object.keys(config).forEach((key: string) => {
-      this.defaultConfig = config[key];
-    });
+    if (config.position) {
+      this.defaultConfig.position = config.position;
+    }
+
+    // set colors
+    if (config.colors) {
+      Object.keys(config.colors).forEach((key: string) => {
+        this.defaultConfig.colors[key] = config.colors[key];
+      });
+    }
+
+    // set msg
     if (!config.msg) {
       return;
     }

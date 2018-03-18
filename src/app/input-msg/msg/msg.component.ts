@@ -79,6 +79,17 @@ export class MsgComponent implements OnInit, OnChanges, OnDestroy {
     };
   }
 
+  public getStyles(): { [name: string]: string } {
+
+    let color: string;
+    if (this.currentStatus === 'maxlength') {
+      color = this.defaultConfig.colors.maxlength;
+    } else {
+      color = this.defaultConfig.colors.error;
+    }
+    return { color: color };
+  }
+
   public ngOnChanges(changes: { [prop: string]: SimpleChange }): void {
 
     const changeableProps = {
