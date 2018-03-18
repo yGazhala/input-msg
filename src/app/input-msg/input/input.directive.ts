@@ -111,13 +111,11 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
 
     this.elem = this.elemRef.nativeElement;
     this.isMaterial = this.matInput === '';
-
-    this.initElemType();
-
     this.inputKey = this.id || this.name;
-    if (!this.inputKey) {
-      throw new Error('gInput directive: id or name attribute is required');
-    }
+
+    this.checkRequiredParams();
+    this.initElemType();
+    this.checkElemTypeCompatibleValidators();
 
     this.setMatFormFieldClass();
 
@@ -129,6 +127,9 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
     // Wait till NgForm will be initialized
     setTimeout(() => {
       this.form = this.model.formDirective as NgForm;
+      if (!this.form) {
+        throw new Error(`gInput directive: the element with name="${this.name}" have to be inside a <form> element`);
+      }
       this.statusOn();
     }, 0);
   }
@@ -137,8 +138,22 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
     return this.validator.validate(control);
   }
 
+  private checkElemTypeCompatibleValidators(): void {
+
+    if (this.hasBoolaenParam('integer') && this.type !== 'number') {
+      throw new Error(
+        `gInput directive: integer param is not compatible with ${this.type}. Use an input with number type instead.`
+      );
+    }
+  }
+
   private checkRequiredParams(): void {
-    
+    if (!this.name) {
+      throw new Error(`gInput directive: can\'t find name attribute on the element`);
+    }
+    if (!(this.model instanceof NgModel)) {
+      throw new Error(`gInput directive: NgModel instance have to be provided to [model] param of the element`);
+    }
   }
 
   private createValidator(): void {
@@ -180,12 +195,6 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
     if (!supportedInputType[this.type]) {
       throw new Error(
         `gInput directive: input with type ${this.type} is not supported. Consider to use only email, text, number or password type.`
-      );
-    }
-
-    if (this.hasBoolaenParam('integer') && this.type !== 'number') {
-      throw new Error(
-        `gInput directive: integer param is not compatible with ${this.type}. Use an input with number type instead.`
       );
     }
 
