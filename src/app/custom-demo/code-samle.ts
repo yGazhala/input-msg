@@ -174,7 +174,7 @@ export const customDemoScss = `
         border: 1px solid grey;
         border-radius: 4px;
         outline: none;
-        transition: border-color 300ms ease;
+        transition: border-color 250ms ease-in;
         &.g-input_invalid {
           border-color: #f44336;
         }
@@ -182,7 +182,6 @@ export const customDemoScss = `
       .custom-input-label {
         font-size: 12px;
         color: grey;
-        transition: color 300ms ease;
         &.g-input_invalid {
           color: #f44336;
         }

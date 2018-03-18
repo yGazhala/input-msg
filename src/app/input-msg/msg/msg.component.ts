@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChange, ViewEncapsulation } from '@angular/core';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 
 import { Subscription } from 'rxjs/Subscription';
 
@@ -16,7 +17,20 @@ import { inputMsg } from '../types';
   selector: 'g-msg',
   templateUrl: './msg.component.html',
   styleUrls: ['./msg.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  animations: [
+    trigger('msgAnimation', [
+      state('active', style({ opacity: 1 })),
+      transition('void => *', [
+        style({ opacity: 0 }),
+        animate('250ms ease-in', style({ opacity: 1 }))
+      ]),
+      transition('* => void', [
+        style({ opacity: 1 }),
+        animate('250ms ease-in', style({ opacity: 0 }))
+      ])
+    ])
+  ]
 })
 export class MsgComponent implements OnInit, OnChanges, OnDestroy {
 

@@ -42,6 +42,8 @@ export class LabelDirective implements OnInit, OnDestroy {
       throw new Error('gLabel directive: \'for\' attribute with input id or name is required.');
     }
 
+    this.setAnimation();
+
     // Wait till the input element will be initialized.
     // We should wait in case the label element was
     // inserted before the input.
@@ -53,6 +55,10 @@ export class LabelDirective implements OnInit, OnDestroy {
       this.valid = inputParams.valid;
       this.valid.subscribe(this.toggleClassOnValidChange.bind(this));
     }, 0);
+  }
+
+  private setAnimation(): void {
+    this.elem.style.transition = 'color 250ms ease-in';
   }
 
   private toggleClassOnValidChange(valid: boolean): void {
