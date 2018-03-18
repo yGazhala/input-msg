@@ -1,13 +1,21 @@
-<nav mat-tab-nav-bar>
+<section class="top-bar">
 
-  <a mat-tab-link
-    *ngFor="let link of links"
-    [routerLink]="link.path"
-    routerLinkActive #rla="routerLinkActive"
-    [active]="rla.isActive"
-    >{{link.title}}
-  </a>
+  <nav class="navigation" mat-tab-nav-bar>
 
-</nav>
+    <a mat-tab-link
+      *ngFor="let link of links"
+      [routerLink]="link.path"
+      routerLinkActive #rla="routerLinkActive"
+      [active]="rla.isActive"
+      >{{link.title}}
+    </a>
+
+    <a class="docs-link" href="https://github.com/yGazhala/input-msg">
+      <img class="github-icon" src="/assets/github-icon.svg">Documentation
+    </a>
+
+  </nav>
+
+</section>
   
 <router-outlet></router-outlet>

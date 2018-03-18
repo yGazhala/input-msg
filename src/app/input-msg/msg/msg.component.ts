@@ -25,16 +25,6 @@ export class MsgComponent implements OnInit, OnChanges, OnDestroy {
    */
   @Input() public for: string;
   /**
-   * DEPRECATED.
-   * Use for param instead.
-   */
-  @Input() public inputId: string;
-  /**
-   * DEPRECATED.
-   * Use for param instead.
-   */
-  @Input() public inputName: string;
-  /**
    * Optional params with custom messages
    * that overwrite the default ones
    */
@@ -53,7 +43,6 @@ export class MsgComponent implements OnInit, OnChanges, OnDestroy {
 
   private currentStatus: inputMsg.InputStatus;
   private defaultConfig: inputMsg.Config;
-  private inputKey: string;
   private inputParams: inputMsg.InputParams;
   // All available messages corresponded
   // to validation params of the input
@@ -111,14 +100,13 @@ export class MsgComponent implements OnInit, OnChanges, OnDestroy {
 
     this.defaultConfig = this.configService.get();
 
-    this.inputKey = this.for || this.inputId || this.inputName;
-    if (!this.inputKey) {
+    if (!this.for) {
       throw new Error('gMsg component: \'for\' parameter with the input id or name must be provided.');
     }
 
-    this.inputParams = this.storageService.get(this.inputKey);
+    this.inputParams = this.storageService.get(this.for);
     if (!this.inputParams) {
-      throw new Error(`gMsg component: can\'t find the input element with id or name: ${this.inputKey}`);
+      throw new Error(`gMsg component: can\'t find the input element with id or name: ${this.for}`);
     }
 
     // Set default or custom messages for given validation params

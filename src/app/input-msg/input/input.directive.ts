@@ -1,5 +1,5 @@
 import { Directive, ElementRef, Input, OnInit, OnChanges, OnDestroy, SimpleChange } from '@angular/core';
-import { NG_VALIDATORS, AbstractControl, NgModel, NgForm } from '@angular/forms';
+import { NG_VALIDATORS, AbstractControl, NgModel, NgForm, FormControl } from '@angular/forms';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
@@ -28,41 +28,30 @@ import { inputMsg } from '../types';
       useExisting: InputDirective,
       multi: true
     },
-    InputValidatorFactory
+    InputValidatorFactory,
+    NgModel
   ]
 })
 
 export class InputDirective implements OnInit, OnChanges, OnDestroy {
 
   @Input() public id: string;
-  /**
-   * DEPRECATED.
-   * Use model insted.
-   */
-  // tslint:disable-next-line:no-input-rename
-  @Input('gInput') public inputModel: NgModel;
   @Input() public integer: '' | boolean;
   @Input() public label: string;
   @Input() public matInput: '';
   @Input() public max: string | number;
   @Input() public maxlength: string | number;
-  /**
-   * DEPRECATED.
-   * Material Design betta 11 support.
-   * Use matInput instead.
-   */
-  @Input() public mdInput: '';
   @Input() public min: string | number;
   @Input() public minlength: string | number;
   @Input() public model: NgModel;
   @Input() public name: string;
+
   @Input() public pattern: RegExp;
   @Input() public placeholder: string;
   @Input() public required: '' | boolean;
   @Input() public type: inputMsg.SupportedInputType = 'text'; // default
 
   private elem: HTMLInputElement;
-  private elemModel: NgModel;
   private elemType: inputMsg.AggregatedInputType;
   private form: NgForm;
   private inputKey: string;
@@ -101,7 +90,7 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
       }
 
       if (name === 'placeholder' || name === 'label') {
-        this.inputParams.label = changes[name].currentValue();
+        this.inputParams.label = changes[name].currentValue;
         this.inputParams.paramChange.next('label');
         return;
       }
@@ -121,8 +110,7 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
   public ngOnInit(): void {
 
     this.elem = this.elemRef.nativeElement;
-    this.elemModel = this.model || this.inputModel;
-    this.isMaterial = this.matInput === '' || this.mdInput === '';
+    this.isMaterial = this.matInput === '';
 
     this.initElemType();
 
@@ -140,7 +128,7 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
 
     // Wait till NgForm will be initialized
     setTimeout(() => {
-      this.form = this.elemModel.formDirective as NgForm;
+      this.form = this.model.formDirective as NgForm;
       this.statusOn();
     }, 0);
   }
@@ -149,6 +137,9 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
     return this.validator.validate(control);
   }
 
+  private checkRequiredParams(): void {
+    
+  }
 
   private createValidator(): void {
 
@@ -233,8 +224,7 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
     let parent: HTMLElement = input.parentElement;
 
     for (let i = 0; i < 10; i++) {
-      if (parent.tagName === 'MAT-FORM-FIELD' ||
-        parent.tagName === 'MD-FORM-FIELD') {
+      if (parent.tagName === 'MAT-FORM-FIELD') {
         break;
       }
       parent = parent.parentElement;
@@ -328,7 +318,7 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
     // Emits an error status if the input is invalid.
     const emitErrorStatus = (): void => {
       for (const param of this.validationParams) {
-        if (this.elemModel.hasError(param.name)) {
+        if (this.model.hasError(param.name)) {
           this.inputParams.valid.next(false);
           this.inputParams.status.next(param.name);
           return;
@@ -337,7 +327,7 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
     };
 
     const emitErrorStatusOnTouched = (): void => {
-      if (this.elemModel.touched || this.form.submitted) {
+      if (this.model.touched || this.form.submitted) {
         emitErrorStatus();
       }
     };
@@ -364,7 +354,7 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
     };
 
     const emitMaxLengthStatus = (): void => {
-      if (this.elemModel.value.length === +this.maxlength) {
+      if (this.model.value.length === +this.maxlength) {
         this.inputParams.status.next('maxlength');
       }
     };
@@ -374,7 +364,7 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
       .subscribe(emitErrorStatusOnTouched);
     this.statusSubscriptions.push(blurSub);
 
-    const controlValueSub: Subscription = this.elemModel.valueChanges
+    const controlValueSub: Subscription = this.model.valueChanges
       .subscribe(emitErrorStatusOnTouched);
     this.statusSubscriptions.push(controlValueSub);
 
@@ -382,12 +372,12 @@ export class InputDirective implements OnInit, OnChanges, OnDestroy {
       .subscribe(emitErrorStatus);
     this.statusSubscriptions.push(formSubmitSub);
 
-    const controlStatusSub: Subscription = this.elemModel.statusChanges
+    const controlStatusSub: Subscription = this.model.statusChanges
       .subscribe(emitValidAndPristineStatus);
     this.statusSubscriptions.push(controlStatusSub);
 
     if (this.hasNumberParam('maxlength')) {
-      const controlValueLengthSub: Subscription = this.elemModel.valueChanges
+      const controlValueLengthSub: Subscription = this.model.valueChanges
         .subscribe(emitMaxLengthStatus);
       this.statusSubscriptions.push(controlValueLengthSub);
     }
