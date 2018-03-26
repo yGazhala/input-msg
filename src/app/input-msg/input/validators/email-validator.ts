@@ -11,14 +11,13 @@ export class EmailValidator extends InputValidator {
     const availableValidators = {
       email: this.email
     };
-    this.initCurrentValidators(availableValidators, validatorConfig);
+    super.setCurrentValidators(availableValidators, validatorConfig);
   }
 
   private email(value: string): { email: string } | null {
-    // Do not validate field if there is no value provided.
-    // If the value is required the input must contain 'required' attribute.
-    if (typeof value === 'undefined') {
-      return null;
+
+    if (super.empty(value)) {
+      return { email: 'empty' };
     }
     // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
     // tslint:disable-next-line:max-line-length

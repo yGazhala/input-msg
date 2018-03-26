@@ -22,13 +22,13 @@ export class TextValidator extends InputValidator {
       pattern: this.pattern.bind(this),
       required: this.required.bind(this)
     };
-    this.initCurrentValidators(availableValidators, validatorConfig);
+    this.setCurrentValidators(availableValidators, validatorConfig);
   }
 
   private maxlength(value: string, max: number): { maxlength: string } | null {
     // Do not validate field if there is no value provided.
     // If the value is required the input should contain 'required' attribute.
-    if (this.isEmpty(value)) {
+    if (this.empty(value)) {
       return null;
     }
     return value.length > max ? { maxlength: value } : null;
@@ -37,7 +37,7 @@ export class TextValidator extends InputValidator {
   private minlength(value: string, min: number): { minlength: string } | null {
     // Do not validate field if there is no value provided.
     // If the value is required the input should contain 'required' attribute.
-    if (this.isEmpty(value)) {
+    if (this.empty(value)) {
       return null;
     }
     return value.length < min ? { minlength: value } : null;
@@ -46,18 +46,14 @@ export class TextValidator extends InputValidator {
   private pattern(value: string, regExp: RegExp): { pattern: string } | null {
     // Do not validate field if there is no value provided.
     // If the value is required the input should contain 'required' attribute.
-    if (this.isEmpty(value)) {
+    if (this.empty(value)) {
       return null;
     }
     return regExp.test(value) ? null : { pattern: value };
   }
 
   private required(value: string): { required: true } | null {
-    return this.isEmpty(value) ? { required: true } : null;
-  }
-
-  private isEmpty(value: string): boolean {
-    return typeof value === 'undefined' || value === '' || value === null;
+    return this.empty(value) ? { required: true } : null;
   }
 
 }

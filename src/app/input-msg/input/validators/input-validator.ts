@@ -2,7 +2,7 @@ import { AbstractControl } from '@angular/forms';
 
 import { inputMsg } from '../../types';
 
-export abstract class InputValidator {
+export abstract class InputValidator implements inputMsg.InputValidator {
 
   private currentValidators: inputMsg.Validator<any>[];
 
@@ -19,7 +19,11 @@ export abstract class InputValidator {
     return result;
   }
 
-  protected initCurrentValidators(availableValidators: { [key: string]: inputMsg.ValidatorFn<any> },
+  protected empty(value: any): boolean {
+    return typeof value === 'undefined' || value === '' || value === null;
+  }
+
+  protected setCurrentValidators(availableValidators: { [key: string]: inputMsg.ValidatorFn<any> },
     validatorConfig: inputMsg.ValidatorConfig<any>[]): void {
 
     this.currentValidators = [];

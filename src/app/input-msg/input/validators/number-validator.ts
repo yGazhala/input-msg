@@ -9,25 +9,54 @@ export class NumberValidator extends InputValidator {
   constructor(private validatorConfig: inputMsg.ValidatorConfig<number>[]) {
     super();
     const availableValidators = {
-      integer: this.integer,
-      max: this.max,
-      min: this.min
+      integer: this.integer.bind(this),
+      max: this.max.bind(this),
+      min: this.min.bind(this)
     };
-    this.initCurrentValidators(availableValidators, validatorConfig);
+    super.setCurrentValidators(availableValidators, validatorConfig);
   }
 
-  private integer(value: number): { integer: number } | null {
-    // tslint:disable-next-line:no-bitwise
-    const isInteger: boolean = !isNaN(value) && (value | 0) === value;
-    return isInteger ? null : { integer: value };
+  private integer(value: number): { integer: any } | null {
+
+    if (!this.number(value)) {
+      return { integer: 'Not a number' };
+    }
+    const integer: boolean = Math.floor(value) === value;
+    return integer ? null : { integer: value };
   }
 
-  private max(value: number, max: number): { max: number } | null {
-    return (value > max) ? { max: value } : null;
+  private max(value: number, max: number): { max: any } | null {
+
+    if (!this.number(value)) {
+      return { max: 'Not a number' };
+    }
+    if (value > max) {
+      const error = {
+        max: value === 0 ? '0' : value
+      };
+      return error;
+    } else {
+      return null;
+    }
   }
 
-  private min(value: number, min: number): { min: number } | null {
-    return (value < min) ? { min: value } : null;
+  private min(value: number, min: number): { min: any } | null {
+
+    if (!this.number(value)) {
+      return { min: 'Not a number' };
+    }
+    if (value < min) {
+      const error = {
+        min: value === 0 ? '0' : value
+      };
+      return error;
+    } else {
+      return null;
+    }
+  }
+
+  private number(arg: any): boolean {
+    return !isNaN(parseFloat(arg)) && isFinite(arg);
   }
 
 }

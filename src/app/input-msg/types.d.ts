@@ -1,10 +1,3 @@
-/**
- * Note, there is the angular cli or webpack issue when we try
- * importing files with .d.ts extension into a file which contains angular decorators.
- * So we decided to use .ts files for declarations until the issue will be fixed.
- * See: https://github.com/angular/angular-cli/issues/4874
- */
-
 import { AbstractControl } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Subject } from 'rxjs/Subject';
@@ -54,6 +47,10 @@ export declare module inputMsg {
 
   type InputStatus = 'pristine' | 'valid' | ValidatorName;
 
+  interface InputValidator {
+    validate(control: AbstractControl): { [validatorName: string]: any } | null;
+  }
+
   type MsgFn = (placeholder: string) => string;
 
   type Position = 'bottom-left' | 'bottom-right';
@@ -74,12 +71,12 @@ export declare module inputMsg {
 
   interface Validator<T> {
     validate: ValidatorFn<T>;
-    compareWith: T;
+    compareWith?: T;
   }
 
   interface ValidatorConfig<T> {
     name: ValidatorName;
-    compareWith: T; // number | RegExp | undefined
+    compareWith?: T; // number | RegExp | undefined
   }
 
   type ValidatorFn<T> = (value: string | number, compareWith?: T) => { [validatorName: string]: T } | null;
