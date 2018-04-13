@@ -23,8 +23,12 @@ export abstract class InputValidator implements inputMsg.InputValidator {
     return typeof value === 'undefined' || value === '' || value === null;
   }
 
-  protected setCurrentValidators(availableValidators: { [key: string]: inputMsg.ValidatorFn<any> },
-    validatorConfig: inputMsg.ValidatorConfig<any>[]): void {
+  protected setCurrentValidators(
+    availableValidators: { [key: string]: inputMsg.ValidatorFn<any> },
+    validatorConfig: inputMsg.ValidatorConfig<any>[]
+  ): void {
+
+    availableValidators.required = this.required.bind(this);
 
     this.currentValidators = [];
     validatorConfig.forEach(config => {
@@ -33,6 +37,10 @@ export abstract class InputValidator implements inputMsg.InputValidator {
         compareWith: config.compareWith
       });
     });
+  }
+
+  private required(value: string): { required: true } | null {
+    return this.empty(value) ? { required: true } : null;
   }
 
 }

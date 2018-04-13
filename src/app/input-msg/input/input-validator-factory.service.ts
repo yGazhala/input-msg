@@ -11,54 +11,44 @@ import { inputMsg } from '../types';
 export class InputValidatorFactory {
 
   /**
-   * Creates validators depending on the input type
-   * and given validation params.
+   * Creates validators depending on a given
+   * input type and validation params.
    */
   public create(inputType: inputMsg.AggregatedInputType, validators: { [key: string]: inputMsg.ValidatorConfig<any> }): InputValidator {
 
+    let config: inputMsg.ValidatorConfig<any>[];
+    let validatorSequence: inputMsg.ValidatorName[];
+
     switch (inputType) {
       case 'textLike':
-        return this.createTextValidator(validators);
+        validatorSequence = ['required', 'minlength', 'maxlength', 'pattern'];
+        config = this.getValidatorConfig<undefined | number | RegExp>(validators, validatorSequence);
+        return new TextValidator(config);
       case 'email':
-        return this.createEmailValidator();
+        validatorSequence = ['required', 'email'];
+        config = this.getValidatorConfig<undefined>(validators, validatorSequence);
+        return new EmailValidator(config);
       case 'number':
-        return this.createNumberValidator(validators);
+        validatorSequence = ['required', 'integer', 'min', 'max'];
+        config = this.getValidatorConfig<undefined | number>(validators, validatorSequence);
+        return new NumberValidator(config);
       default:
         throw new Error(`InputValidatorFactory.create() failed: unsupported input type ${inputType}`);
     }
   }
 
-  private createEmailValidator(): InputValidator {
-    const validatorConfig = { name: 'email' } as inputMsg.ValidatorConfig<undefined>;
-    return new EmailValidator([validatorConfig]);
-  }
+  private getValidatorConfig<T>(
+    validators: { [key: string]: inputMsg.ValidatorConfig<T> },
+    validatorSequence: inputMsg.ValidatorName[]
+  ): inputMsg.ValidatorConfig<T>[] {
 
-  private createNumberValidator(validators: { [key: string]: inputMsg.ValidatorConfig<number> }): InputValidator {
-
-    const config: inputMsg.ValidatorConfig<number>[] = [];
-
-    const validatorSequence: inputMsg.ValidatorName[] = ['integer', 'min', 'max'];
+    const config: inputMsg.ValidatorConfig<T>[] = [];
     validatorSequence.forEach(name => {
       if (validators[name]) {
         config.push(validators[name]);
       }
     });
-
-    return new NumberValidator(config);
-  }
-
-  private createTextValidator(validators: { [key: string]: inputMsg.ValidatorConfig<number | RegExp> }): InputValidator {
-
-    const config: inputMsg.ValidatorConfig<number | RegExp>[] = [];
-
-    const validatorSequence: inputMsg.ValidatorName[] = ['required', 'minlength', 'maxlength', 'pattern'];
-    validatorSequence.forEach(name => {
-      if (validators[name]) {
-        config.push(validators[name]);
-      }
-    });
-
-    return new TextValidator(config);
+    return config;
   }
 
 }
