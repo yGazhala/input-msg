@@ -6,18 +6,28 @@ import { inputMsg } from '../../types';
 
 export class EmailValidator extends InputValidator {
 
+  private readonly validators = {
+    email: this.email
+  };
+
   constructor(private validatorConfig: inputMsg.ValidatorConfig<undefined>[]) {
     super();
-    const availableValidators = {
-      email: this.email
-    };
-    super.setCurrentValidators(availableValidators, validatorConfig);
+    // const availableValidators = {
+    //   email: this.email
+    // };
+    super.setCurrentValidators(this.validators, validatorConfig);
   }
 
   private email(value: string): { email: string } | null {
 
+    /**
+     * We should skip the validation for empty values.
+     * Consider the case when a client sets an optional
+     * email input that should be validated
+     * only if a user inputs some text.
+     */
     if (super.empty(value)) {
-      return { email: 'empty' };
+      return { email: null };
     }
     // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
     // tslint:disable-next-line:max-line-length
