@@ -6,16 +6,16 @@ import { inputMsg } from '../../types';
 
 export class EmailValidator extends InputValidator {
 
-  private readonly validators = {
+  protected availableValidators = {
     email: this.email
   };
+  protected validatorSequence = ['required', 'email'];
 
-  constructor(private validatorConfig: inputMsg.ValidatorConfig<undefined>[]) {
+  constructor(
+    private validatorsToApply: { [key: string]: inputMsg.ValidatorConfig<void> }
+  ) {
     super();
-    // const availableValidators = {
-    //   email: this.email
-    // };
-    super.setCurrentValidators(this.validators, validatorConfig);
+    super.setCurrentValidators(validatorsToApply);
   }
 
   private email(value: string): { email: string } | null {

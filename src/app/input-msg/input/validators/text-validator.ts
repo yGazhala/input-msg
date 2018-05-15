@@ -9,19 +9,25 @@ import { inputMsg } from '../../types';
  */
 export class TextValidator extends InputValidator {
 
-  constructor(private validatorConfig: inputMsg.ValidatorConfig<number | RegExp>[]) {
+  /**
+   * Note, 'minlength' and 'maxlength' validators
+   * are already supported by Angular NgForm, but
+   * we should emplement them to stop the validation
+   * process when the first validator fails.
+   * See: InputValidator.validate() implementation.
+   */
+  protected availableValidators = {
+    maxlength: this.maxlength,
+    minlength: this.minlength,
+    pattern: this.pattern
+  };
+  protected validatorSequence = ['required', 'minlength', 'maxlength', 'pattern'];
+
+  constructor(
+    private validatorsToApply: { [key: string]: inputMsg.ValidatorConfig<void | number | RegExp> }
+  ) {
     super();
-    // Note, 'minlength' and 'maxlength'
-    // validators are already supported by Angular NgForm,
-    // but we should emplement them to stop the validation
-    // process when the first validator fails.
-    // See: InputValidator.validate() implementation.
-    const availableValidators = {
-      maxlength: this.maxlength,
-      minlength: this.minlength,
-      pattern: this.pattern
-    };
-    super.setCurrentValidators(availableValidators, validatorConfig);
+    super.setCurrentValidators(validatorsToApply);
   }
 
   private maxlength(value: string, max: number): { maxlength: string } | null {

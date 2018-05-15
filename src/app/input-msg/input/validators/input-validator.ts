@@ -4,7 +4,20 @@ import { inputMsg } from '../../types';
 
 export abstract class InputValidator implements inputMsg.InputValidator {
 
+  /**
+   * All available validators for specific input type
+   */
+  protected availableValidators: { [name: string]: inputMsg.ValidatorFn<any> };
+  /**
+   * The sequence of validator names to validate an input element with one by one.
+   * @example ['required', 'minlenght', 'maxlength', 'pattern']
+   */
+  protected validatorSequence: string[];
+  /**
+   * The current validators applied to the specific input element
+   */
   private currentValidators: inputMsg.Validator<any>[];
+
 
   public validate(control: AbstractControl): { [validatorName: string]: any } | null {
 
@@ -19,26 +32,49 @@ export abstract class InputValidator implements inputMsg.InputValidator {
     return result;
   }
 
+
   protected empty(value: any): boolean {
     return typeof value === 'undefined' || value === '' || value === null;
   }
 
-  protected setCurrentValidators(
-    availableValidators: { [key: string]: inputMsg.ValidatorFn<any> },
-    validatorConfig: inputMsg.ValidatorConfig<any>[]
-  ): void {
+  protected setCurrentValidators(validatorsToApply: { [key: string]: inputMsg.ValidatorConfig<any> }): void {
 
-    availableValidators.required = this.required.bind(this);
+    if (typeof this.availableValidators !== 'object') {
+      throw new Error('InputValidator class: this.availableValidators have to be initialized in the derived class');
+    }
+    if (!Array.isArray(this.validatorSequence)) {
+      throw new Error('InputValidator class: this.validatorSequence have to be initialized in the derived class');
+    }
+
+    this.availableValidators.required = this.required.bind(this);
 
     this.currentValidators = [];
-    validatorConfig.forEach(config => {
+    const validatorConfigs = this.getValidatorConfigs(validatorsToApply);
+    validatorConfigs.forEach(config => {
       this.currentValidators.push({
-        validate: availableValidators[config.name],
+        validate: this.availableValidators[config.name],
         compareWith: config.compareWith
       });
     });
   }
 
+  /**
+   * Returns the sequence of configs of validators
+   */
+  private getValidatorConfigs<T>(validatorsToApply: { [key: string]: inputMsg.ValidatorConfig<T> }): inputMsg.ValidatorConfig<T>[] {
+
+    const config: inputMsg.ValidatorConfig<T>[] = [];
+    this.validatorSequence.forEach(name => {
+      if (validatorsToApply[name]) {
+        config.push(validatorsToApply[name]);
+      }
+    });
+    return config;
+  }
+
+  /**
+   * Validation function to be used with any type of an input element
+   */
   private required(value: string): { required: true } | null {
     return this.empty(value) ? { required: true } : null;
   }

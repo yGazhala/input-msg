@@ -6,14 +6,18 @@ import { inputMsg } from '../../types';
 
 export class NumberValidator extends InputValidator {
 
-  constructor(private validatorConfig: inputMsg.ValidatorConfig<number>[]) {
+  protected availableValidators = {
+    integer: this.integer.bind(this),
+    max: this.max.bind(this),
+    min: this.min.bind(this)
+  };
+  protected validatorSequence = ['required', 'integer', 'min', 'max'];
+
+  constructor(
+    private validatorsToApply: { [key: string]: inputMsg.ValidatorConfig<void | number> }
+  ) {
     super();
-    const availableValidators = {
-      integer: this.integer.bind(this),
-      max: this.max.bind(this),
-      min: this.min.bind(this)
-    };
-    super.setCurrentValidators(availableValidators, validatorConfig);
+    super.setCurrentValidators(validatorsToApply);
   }
 
   private integer(value: number): { integer: any } | null {

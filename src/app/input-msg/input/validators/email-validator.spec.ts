@@ -8,7 +8,7 @@ describe('EmailValidator', () => {
 
   let validator: EmailValidator;
 
-  beforeEach(() => { 
+  beforeEach(() => {
     validator = new EmailValidator([{ name: 'email' }]);
     jasmine.addMatchers(
       createToBeValidMatcher('email')
