@@ -15,7 +15,6 @@ describe('NumberValidator', () => {
       validator = new NumberValidator({
         integer: {
           name: 'integer',
-          value: true,
           set: true
         }
       });

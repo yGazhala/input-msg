@@ -23,7 +23,7 @@ export declare module inputMsg {
     status: BehaviorSubject<InputStatus>;
     valid: BehaviorSubject<boolean>;
     validationParams: {
-      [valiadatorName: string]: true | number | string;
+      [valiadatorName: string]: ValidatorParam;
     };
   }
 
@@ -63,7 +63,7 @@ export declare module inputMsg {
   interface ValidatorParam {
     name: ValidatorName;
     // the value to pass to ValidatorFn as compareWith paramteter
-    value: any;
+    value?: any;
     set: boolean;
   }
 

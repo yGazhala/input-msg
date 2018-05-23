@@ -192,18 +192,19 @@ export abstract class AbstractInput implements OnInit, OnChanges, OnDestroy {
     this.validatorParams = [];
 
     if (this.hasBoolaenParam('required')) {
-      this.inputParams.validationParams.required = true;
-      this.validatorParams.push({
+      const requiredParam: inputMsg.ValidatorParam = {
         name: 'required',
         value: undefined,
         set: true
-      });
+      };
+      this.inputParams.validationParams.required = requiredParam;
+      this.validatorParams.push(requiredParam);
     }
 
     Object.keys(this.validatorOptions).forEach(name => {
       const param: inputMsg.ValidatorParam = this.validatorOptions[name]();
       if (param.set) {
-        this.inputParams.validationParams[name] = param.value;
+        this.inputParams.validationParams[name] = param;
         this.validatorParams.push(param);
       }
     });

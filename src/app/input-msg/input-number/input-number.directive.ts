@@ -26,8 +26,7 @@ export class InputNumberDirective extends AbstractInput {
     integer: () => {
       return {
         name: 'integer',
-        set: super.hasBoolaenParam('integer'),
-        value: true
+        set: super.hasBoolaenParam('integer')
       };
     },
     max: () => {

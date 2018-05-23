@@ -23,8 +23,7 @@ export class InputEmailDirective extends AbstractInput {
       // The email validator is always set by default
       return {
         name: 'email',
-        set: true,
-        value: true
+        set: true
       };
     }
   };

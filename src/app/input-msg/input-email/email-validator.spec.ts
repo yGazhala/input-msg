@@ -12,7 +12,6 @@ describe('EmailValidator', () => {
     validator = new EmailValidator({
       email: {
         name: 'email',
-        value: true,
         set: true
       }
     });
