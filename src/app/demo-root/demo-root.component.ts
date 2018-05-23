@@ -6,7 +6,7 @@ import { demoComponent, demoTemplate, demoScss } from '../material-demo/code-sam
 import { customDemoTemplate, customDemoScss } from '../custom-demo/code-samle';
 
 @Component({
-  selector: 'g-demo-root',
+  selector: 'ngx-demo-root',
   templateUrl: './demo-root.component.html',
   styleUrls: ['./demo-root.component.scss']
 })

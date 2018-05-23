@@ -117,13 +117,13 @@
     "directive-selector": [
       true,
       "attribute",
-      "g",
+      "ngx",
       "camelCase"
     ],
     "component-selector": [
       true,
       "element",
-      "g",
+      "ngx",
       "kebab-case"
     ],
     "use-input-property-decorator": true,

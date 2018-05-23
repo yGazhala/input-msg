@@ -2,14 +2,14 @@ import { EmailValidator } from './email-validator';
 import {
   createMockControl,
   createToBeValidMatcher
-} from '../../testing';
+} from '../testing';
 
 describe('EmailValidator', () => {
 
   let validator: EmailValidator;
 
   beforeEach(() => {
-    validator = new EmailValidator([{ name: 'email' }]);
+    validator = new EmailValidator({ email: { name: 'email' } });
     jasmine.addMatchers(
       createToBeValidMatcher('email')
     );

@@ -14,7 +14,7 @@ import { inputMsg } from '../types';
  * depending on it`s validation status.
  */
 @Component({
-  selector: 'g-msg',
+  selector: 'ngx-msg',
   templateUrl: './msg.component.html',
   styleUrls: ['./msg.component.scss'],
   encapsulation: ViewEncapsulation.None,
@@ -72,10 +72,10 @@ export class MsgComponent implements OnInit, OnChanges, OnDestroy {
 
     const position: 'bottom-left' | 'bottom-right' = this.position || this.configService.get().position;
     return {
-      'g-msg_pos_bottom-left': position === 'bottom-left',
-      'g-msg_pos_bottom-right': position === 'bottom-right',
-      'g-msg_color_tooltip': this.currentStatus === 'maxlength',
-      'g-msg_material': this.inputParams.material
+      'ngx-msg_pos_bottom-left': position === 'bottom-left',
+      'ngx-msg_pos_bottom-right': position === 'bottom-right',
+      'ngx-msg_color_tooltip': this.currentStatus === 'maxlength',
+      'ngx-msg_material': this.inputParams.material
     };
   }
 

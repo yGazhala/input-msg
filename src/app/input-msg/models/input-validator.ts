@@ -1,18 +1,18 @@
 import { AbstractControl } from '@angular/forms';
 
-import { inputMsg } from '../../types';
+import { inputMsg } from '../types';
 
 export abstract class InputValidator implements inputMsg.InputValidator {
 
   /**
    * All available validators for specific input type
    */
-  protected availableValidators: { [name: string]: inputMsg.ValidatorFn<any> };
+  protected abstract availableValidators: { [name: string]: inputMsg.ValidatorFn<any> };
   /**
    * The sequence of validator names to validate an input element with one by one.
    * @example ['required', 'minlenght', 'maxlength', 'pattern']
    */
-  protected validatorSequence: string[];
+  protected abstract validatorSequence: string[];
   /**
    * The current validators applied to the specific input element
    */

@@ -14,8 +14,7 @@ let template = `
       </p>
 
       <input class="custom-input"
-             type="text"
-             gInput
+             ngxInputText
              placeholder="Name"
              [(ngModel)]="data.name"
              name="userName"
@@ -26,7 +25,7 @@ let template = `
              maxlength="10"
         >
 
-      <g-msg for="userName"></g-msg>
+      <ngx-msg for="userName"></ngx-msg>
 
     </div>
 
@@ -37,13 +36,12 @@ let template = `
       </p>
 
       <label class="custom-input-label"
-             gLabel for="emailId"
+             ngxLabel for="emailId"
         >Email
       </label>
 
       <input class="custom-input"
-             type="email"
-             gInput
+             ngxInputEmail
              label="Email"
              name="email"
              id="emailId"
@@ -53,7 +51,7 @@ let template = `
              required
         >
 
-      <g-msg for="emailId"></g-msg>
+      <ngx-msg for="emailId"></ngx-msg>
 
     </div>
 
@@ -65,7 +63,7 @@ let template = `
 
       <input class="custom-input"
              type="password"
-             gInput
+             ngxInputText
              placeholder="Password"
              name="password"
              [(ngModel)]="data.password"
@@ -76,7 +74,7 @@ let template = `
              [pattern]="passwordRegExp"
         >
 
-      <g-msg for="password" [pattern]="weakPasswordMsg"></g-msg>
+      <ngx-msg for="password" [pattern]="weakPasswordMsg"></ngx-msg>
 
     </div>
 
@@ -88,7 +86,7 @@ let template = `
 
       <input class="custom-input"
              type="number"
-             gInput
+             ngxInputNumber
              name="quantity"
              placeholder="Quantity"
              [(ngModel)]="data.quantity"
@@ -99,7 +97,7 @@ let template = `
              min="1" max="100"
         >
 
-      <g-msg for="quantity"></g-msg>
+      <ngx-msg for="quantity"></ngx-msg>
 
     </div>
 
@@ -110,13 +108,13 @@ let template = `
       </p>
 
       <label class="custom-input-label"
-             gLabel
+             ngxLabel
              for="commentId"
         >Comment
       </label>
 
       <textarea class="custom-input"
-                gInput
+                ngxInputText
                 name="comment"
                 id="commentId"
                 label="Comment"
@@ -128,7 +126,7 @@ let template = `
         >
       </textarea>
 
-      <g-msg for="commentId"></g-msg>
+      <ngx-msg for="commentId"></ngx-msg>
 
     </div>
 
@@ -175,7 +173,7 @@ export const customDemoScss = `
         border-radius: 4px;
         outline: none;
         transition: border-color 250ms ease-in;
-        &.g-input_invalid {
+        &.ngx-input_invalid {
           border-color: #f44336;
         }
       }

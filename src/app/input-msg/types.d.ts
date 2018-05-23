@@ -4,8 +4,6 @@ import { Subject } from 'rxjs/Subject';
 
 export declare module inputMsg {
 
-  type AggregatedInputType = 'email' | 'number' | 'textLike';
-
   interface Config {
     colors?: {
       error?: string;
@@ -34,14 +32,7 @@ export declare module inputMsg {
     status: BehaviorSubject<InputStatus>;
     valid: BehaviorSubject<boolean>;
     validationParams: {
-      email?: boolean;
-      integer?: boolean;
-      max?: number;
-      maxlength?: number;
-      min?: number;
-      minlength?: number;
-      pattern?: boolean;
-      required?: boolean;
+      [valiadatorName: string]: true | number | string;
     };
   }
 
@@ -49,6 +40,10 @@ export declare module inputMsg {
 
   interface InputValidator {
     validate(control: AbstractControl): { [validatorName: string]: any } | null;
+  }
+
+  interface InputValidatorFactory {
+    create(validatorsToApply: { [key: string]: inputMsg.ValidatorConfig<any> }): InputValidator;
   }
 
   type MsgFn = (placeholder: string) => string;
@@ -67,8 +62,6 @@ export declare module inputMsg {
     required?: string;
   }
 
-  type SupportedInputType = 'email' | 'text' | 'password' | 'number';
-
   interface Validator<T> {
     validate: ValidatorFn<T>;
     compareWith?: T;
@@ -81,11 +74,13 @@ export declare module inputMsg {
 
   type ValidatorFn<T> = (value: string | number, compareWith?: T) => { [validatorName: string]: T } | null;
 
-  type ValidatorName = 'email' | 'integer' | 'max' | 'maxlength' | 'min' | 'minlength' | 'pattern' | 'required';
+  type ValidatorName = string;
 
-  interface ValidationParamOption {
-    name: ValidatorName;
-    type: 'boolean' | 'number' | 'RegExp' | 'default';
+  type ValidatorParamFn = () => ValidatorParam;
+
+  interface ValidatorParam {
+    value: any;
+    set: boolean;
   }
 
 }

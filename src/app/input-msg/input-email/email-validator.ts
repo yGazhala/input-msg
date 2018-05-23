@@ -1,8 +1,8 @@
 import { AbstractControl } from '@angular/forms';
 
-import { InputValidator } from './input-validator';
+import { InputValidator } from '../models/input-validator';
 
-import { inputMsg } from '../../types';
+import { inputMsg } from '../types';
 
 export class EmailValidator extends InputValidator {
 

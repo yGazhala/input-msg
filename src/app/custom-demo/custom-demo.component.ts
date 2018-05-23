@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
 @Component({
-  selector: 'g-custom-demo',
+  selector: 'ngx-custom-demo',
   templateUrl: './custom-demo.component.html',
   styleUrls: ['./custom-demo.component.scss']
 })
