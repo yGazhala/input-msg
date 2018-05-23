@@ -21,7 +21,11 @@ export class InputEmailDirective extends AbstractInput {
   protected validatorOptions = {
     email: () => {
       // The email validator is always set by default
-      return { set: true, value: undefined };
+      return {
+        name: 'email',
+        set: true,
+        value: true
+      };
     }
   };
 

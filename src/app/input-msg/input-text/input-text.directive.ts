@@ -31,18 +31,21 @@ export class InputTextDirective extends AbstractInput implements OnChanges, OnIn
   protected validatorOptions = {
     maxlength: () => {
       return {
+        name: 'maxlength',
         set: super.hasNumberParam('maxlength'),
         value: +this.maxlength
       };
     },
     minlength: () => {
       return {
+        name: 'minlength',
         set: super.hasNumberParam('minlength'),
         value: +this.minlength
       };
     },
     pattern: () => {
       return {
+        name: 'pattern',
         set: this.pattern instanceof RegExp,
         value: this.pattern
       };

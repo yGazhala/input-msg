@@ -15,7 +15,8 @@ describe('TextValidator', () => {
       validator = new TextValidator({
         maxlength: {
           name: 'maxlength',
-          compareWith: 5
+          value: 5,
+          set: true
         }
       });
 
@@ -60,7 +61,8 @@ describe('TextValidator', () => {
       validator = new TextValidator({
         minlength: {
           name: 'minlength',
-          compareWith: 5
+          value: 5,
+          set: true
         }
       });
 
@@ -107,7 +109,8 @@ describe('TextValidator', () => {
       validator = new TextValidator({
         pattern: {
           name: 'pattern',
-          compareWith: /(?=.*\d)(?=.*[a-z])/i
+          value: /(?=.*\d)(?=.*[a-z])/i,
+          set: true
         }
       });
 

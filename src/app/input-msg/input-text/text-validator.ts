@@ -24,7 +24,7 @@ export class TextValidator extends InputValidator {
   protected validatorSequence = ['required', 'minlength', 'maxlength', 'pattern'];
 
   constructor(
-    private validatorsToApply: { [key: string]: inputMsg.ValidatorConfig<void | number | RegExp> }
+    private validatorsToApply: { [key: string]: inputMsg.ValidatorParam }
   ) {
     super();
     super.setCurrentValidators(validatorsToApply);

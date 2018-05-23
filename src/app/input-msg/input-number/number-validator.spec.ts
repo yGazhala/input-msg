@@ -12,7 +12,13 @@ describe('NumberValidator', () => {
     let validator: NumberValidator;
 
     beforeEach(() => {
-      validator = new NumberValidator({ integer: { name: 'integer' } });
+      validator = new NumberValidator({
+        integer: {
+          name: 'integer',
+          value: true,
+          set: true
+        }
+      });
 
       jasmine.addMatchers(
         createToBeValidMatcher('integer')
@@ -60,7 +66,7 @@ describe('NumberValidator', () => {
 
     beforeEach(() => {
       validator = new NumberValidator({
-        max: { name: 'max', compareWith: 1 }
+        max: { name: 'max', value: 1, set: true }
       });
 
       jasmine.addMatchers(
@@ -94,7 +100,7 @@ describe('NumberValidator', () => {
 
     beforeEach(() => {
       validator = new NumberValidator({
-        min: { name: 'min', compareWith: 1 }
+        min: { name: 'min', value: 1, set: true }
       });
 
       jasmine.addMatchers(

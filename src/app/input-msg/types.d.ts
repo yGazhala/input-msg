@@ -34,7 +34,7 @@ export declare module inputMsg {
   }
 
   interface InputValidatorFactory {
-    create(validatorsToApply: { [key: string]: inputMsg.ValidatorConfig<any> }): InputValidator;
+    create(validatorsToApply: { [key: string]: inputMsg.ValidatorParam }): InputValidator;
   }
 
   type MsgFn = (placeholder: string, validationParam: any) => string;
@@ -46,28 +46,27 @@ export declare module inputMsg {
     [validatorName: string]: string;
   }
 
-  interface Validator<T> {
-    validate: ValidatorFn<T>;
-    compareWith?: T;
+  interface ValidatorConfig<T> extends ValidatorParam {
+    fn: ValidatorFn<T>;
   }
 
-  interface ValidatorConfig<T> {
-    name: ValidatorName;
-    compareWith?: T; // number | RegExp | undefined
-  }
-
-  type ValidatorFn<T> = (value: string | number, compareWith?: T) => { [validatorName: string]: T } | null;
+  /**
+   * The function to check an input value with.
+   */
+  type ValidatorFn<T> = (controlValue: string | number, compareWith?: T) => { [validatorName: string]: T } | null;
 
   /**
    * Validator name, like: 'required', 'email', 'min', 'max' etc.
    */
   type ValidatorName = string;
 
-  type ValidatorParamFn = () => ValidatorParam;
-
   interface ValidatorParam {
+    name: ValidatorName;
+    // the value to pass to ValidatorFn as compareWith paramteter
     value: any;
     set: boolean;
   }
+
+  type ValidatorParamFn = () => ValidatorParam;
 
 }

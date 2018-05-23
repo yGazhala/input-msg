@@ -25,18 +25,21 @@ export class InputNumberDirective extends AbstractInput {
   protected validatorOptions = {
     integer: () => {
       return {
+        name: 'integer',
         set: super.hasBoolaenParam('integer'),
         value: true
       };
     },
     max: () => {
       return {
+        name: 'max',
         set: super.hasNumberParam('max'),
         value: +this.max
       };
     },
     min: () => {
       return {
+        name: 'min',
         set: super.hasNumberParam('min'),
         value: +this.min
       };

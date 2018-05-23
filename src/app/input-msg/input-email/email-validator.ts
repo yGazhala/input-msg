@@ -12,7 +12,7 @@ export class EmailValidator extends InputValidator {
   protected validatorSequence = ['required', 'email'];
 
   constructor(
-    private validatorsToApply: { [key: string]: inputMsg.ValidatorConfig<void> }
+    private validatorsToApply: { [key: string]: inputMsg.ValidatorParam }
   ) {
     super();
     super.setCurrentValidators(validatorsToApply);

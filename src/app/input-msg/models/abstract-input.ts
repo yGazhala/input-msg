@@ -48,7 +48,7 @@ export abstract class AbstractInput implements OnInit, OnChanges, OnDestroy {
   /**
    * The current validation params of the input
    */
-  private validationParams: inputMsg.ValidatorConfig<any>[];
+  private validatorParams: inputMsg.ValidatorParam[];
   private validator: inputMsg.InputValidator;
 
   constructor(
@@ -139,8 +139,8 @@ export abstract class AbstractInput implements OnInit, OnChanges, OnDestroy {
 
   private createValidator(): void {
 
-    const validators: { [validator: string]: inputMsg.ValidatorConfig<any> } = {};
-    this.validationParams.forEach(param => {
+    const validators: { [validatorName: string]: inputMsg.ValidatorParam } = {};
+    this.validatorParams.forEach(param => {
       validators[param.name] = param;
     });
 
@@ -189,13 +189,14 @@ export abstract class AbstractInput implements OnInit, OnChanges, OnDestroy {
   private setValidationParams(): void {
 
     this.inputParams.validationParams = {};
-    this.validationParams = [];
+    this.validatorParams = [];
 
     if (this.hasBoolaenParam('required')) {
       this.inputParams.validationParams.required = true;
-      this.validationParams.push({
+      this.validatorParams.push({
         name: 'required',
-        compareWith: undefined
+        value: undefined,
+        set: true
       });
     }
 
@@ -203,10 +204,7 @@ export abstract class AbstractInput implements OnInit, OnChanges, OnDestroy {
       const param: inputMsg.ValidatorParam = this.validatorOptions[name]();
       if (param.set) {
         this.inputParams.validationParams[name] = param.value;
-        this.validationParams.push({
-          name: name,
-          compareWith: param.value
-        });
+        this.validatorParams.push(param);
       }
     });
   }
@@ -227,7 +225,7 @@ export abstract class AbstractInput implements OnInit, OnChanges, OnDestroy {
 
     // Emits an error status if the input is invalid.
     const emitErrorStatus = (): void => {
-      for (const param of this.validationParams) {
+      for (const param of this.validatorParams) {
         if (this.model.hasError(param.name)) {
           this.inputParams.valid.next(false);
           this.inputParams.status.next(param.name);

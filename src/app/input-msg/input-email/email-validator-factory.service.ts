@@ -7,7 +7,7 @@ import { inputMsg } from '../types';
 @Injectable()
 export class EmailValidatorFactory implements inputMsg.InputValidatorFactory {
 
-  public create(validatorsToApply: { [key: string]: inputMsg.ValidatorConfig<any> }): EmailValidator {
+  public create(validatorsToApply: { [key: string]: inputMsg.ValidatorParam }): EmailValidator {
     return new EmailValidator(validatorsToApply);
   }
 

@@ -9,7 +9,13 @@ describe('EmailValidator', () => {
   let validator: EmailValidator;
 
   beforeEach(() => {
-    validator = new EmailValidator({ email: { name: 'email' } });
+    validator = new EmailValidator({
+      email: {
+        name: 'email',
+        value: true,
+        set: true
+      }
+    });
     jasmine.addMatchers(
       createToBeValidMatcher('email')
     );
