@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { inputMsg } from './types';
 
 /**
- * This utility service stores the input element params
+ * This utility service stores input element params
  * for communication between ngxInput directive,
  * ngx-msg component and ngxLabel directive.
  */

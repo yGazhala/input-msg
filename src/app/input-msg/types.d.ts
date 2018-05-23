@@ -11,18 +11,9 @@ export declare module inputMsg {
     };
     position?: Position;
     msg?: {
-      email?: string | MsgFn;
-      integer?: string | MsgFn;
-      max?: string | ExtendedMsgFn;
-      min?: string | ExtendedMsgFn;
-      maxlength?: string | ExtendedMsgFn;
-      minlength?: string | ExtendedMsgFn;
-      pattern?: string | MsgFn;
-      required?: string | MsgFn;
+      [validatorName: string]: string | MsgFn;
     };
   }
-
-  type ExtendedMsgFn = (placeholder: string, allowedValue: number) => string;
 
   interface InputParams {
     label?: string;
@@ -46,20 +37,13 @@ export declare module inputMsg {
     create(validatorsToApply: { [key: string]: inputMsg.ValidatorConfig<any> }): InputValidator;
   }
 
-  type MsgFn = (placeholder: string) => string;
+  type MsgFn = (placeholder: string, validationParam: any) => string;
 
   type Position = 'bottom-left' | 'bottom-right';
 
   // Final messages to show
   interface ResultMsg {
-    email?: string;
-    integer?: string;
-    max?: string;
-    maxlength?: string;
-    min?: string;
-    minlength?: string;
-    pattern?: string;
-    required?: string;
+    [validatorName: string]: string;
   }
 
   interface Validator<T> {
@@ -74,6 +58,9 @@ export declare module inputMsg {
 
   type ValidatorFn<T> = (value: string | number, compareWith?: T) => { [validatorName: string]: T } | null;
 
+  /**
+   * Validator name, like: 'required', 'email', 'min', 'max' etc.
+   */
   type ValidatorName = string;
 
   type ValidatorParamFn = () => ValidatorParam;
