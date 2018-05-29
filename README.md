@@ -1,4 +1,4 @@
-# InputMsgModule
+# NgxInputMsg
 
 Provides live form input validation for Angular 2+ projects. [Demo](https://ygazhala.github.io/input-msg)
 
@@ -10,7 +10,7 @@ This project is inspired by AngularJS ng-messages module.
 
 - Easy to add validation through HTML, keeps a component clear from additional form control initializations.
 
-- Supports HTML5 like validation syntax (required, min, max, minlength, maxlength, email, pattern).
+- Supports HTML5 like validation syntax (required, min, max, minlength, maxlength, pattern). It is also provides email and integer validators.
 
 - Flexible. You can configure error messages once via InputMsgConfigService and provide them to the entire application or set the specific message to the specific input.
 
@@ -63,15 +63,15 @@ export class AppModule { }
 
 3. Provide [Angular Material](https://material.angular.io/) to the app, if you are going to use Material style inputs.
 
-4. Inside a `<form>` element, add `gInput` directive to an input element, then append `<g-msg>` component to show error messages. See [Demo](https://ygazhala.github.io/input-msg)
+4. Inside a `<form>` element, add `ngxInputText` directive to an input element, then append `<ngx-msg>` component to show error messages. See [Demo](https://ygazhala.github.io/input-msg)
 
 ## API Reference
 
-### **InputDirective**
+### **InputEmailDirective**
 
-Directive to validate an `<input>` or `<textarea>` element. It is also toggles `g-input_invalid` CSS class when an input status changes.
+Directive to validate an `<input>` or `<input type="email">` element as an email address. It is also toggles `ngx-input_invalid` CSS class when an input status changes.
 
-**Selector:** `gInput` 
+**Selector:** `[ngxInputEmail]`
 
 **Required @Input() properties**
 
@@ -81,70 +81,115 @@ Name | Description
 --- | ---
 model: *NgModel* | An input NgModel instance.
 name: *string* |  An input name attribute.
-type: *string* | Used to apply compatible validators. Supported types: 'text', 'email', 'number' or 'password'. If 'email' type was set - input value would be validated as an email address.
 
 **Optional @Input() properties**
 
 Note, these properties (except `id`) react on changes, so you can change them after an input element initializes.
 
-Name | Supported `<input type="">` | Description
---- | --- | ---
-id: *string* | all\* | Used to connect an input element with `<label>` element.
-integer: *boolean* | number | Checks if an input value is an integer
-label: *string* | all\* | An input label text. Used to be shown inside an error message.
-max: *number* \| *string* | number | Checks if an input value does not exceed `max` value.
-maxlength: *number* \| *string* | text, password | Checks if an input value length does't exceed `maxlength` value.
-min: *number* \| *string* | number | Checks if an input value is not less than `min` value.
-minlength: *number* \| *string* | text, password | Checks if an input value length is more than `minlength` value.
-pattern: *RegExp* | text, password | Checks if an input value matches with `pattern`
-placeholder: *string* | all\* | An alias for `label` property. Used to be shown inside an error message.
-required: *boolean* | all\* | Checks if an input value is not empty.
+Name | Description
+--- | ---
+id: *string* | Used to connect an input element with `<label>` element.
+label: *string* | An input label text.
+placeholder: *string* | An alias for `label` property. Used to be shown inside an error message.
+required: *boolean* | Checks if an input value is not empty.
 
-> all\* means 'email', 'text', 'password' and 'number' types.  
+### **InputNumberDirective**
+
+Directive to validate an `<input type="number">` element. It is also toggles `ngx-input_invalid` CSS class when an input status changes.
+
+**Selector:** `[ngxInputNumber][type="number"]` 
+
+**Required @Input() properties**
+
+Note, these properties have not to be changed after an input element initializes.
+
+Name | Description
+--- | ---
+model: *NgModel* | An input NgModel instance.
+name: *string* |  An input name attribute.
+
+**Optional @Input() properties**
+
+Note, these properties (except `id`) react on changes, so you can change them after an input element initializes.
+
+Name | Description
+--- | ---
+id: *string* | Used to connect an input element with `<label>` element.
+integer: *boolean* | Checks if an input value is an integer.
+label: *string* | An input label text.
+max: *number* \| *string* | Checks if an input value does not exceed `max` value.
+min: *number* \| *string* | Checks if an input value is not less than `min` value.
+placeholder: *string* | An alias for `label` property. Used to be shown inside an error message.
+required: *boolean* | Checks if an input value is not empty.
+
+### **InputTextDirective**
+
+Directive to validate text like `<input>` or `<textarea>` elements. It is also toggles `ngx-input_invalid` CSS class when an input status changes.
+
+**Selector:** `input[ngxInputText], textarea[ngxInputText]` 
+
+**Required @Input() properties**
+
+Note, these properties have not to be changed after an input element initializes.
+
+Name | Description
+--- | ---
+model: *NgModel* | An input NgModel instance.
+name: *string* |  An input name attribute.
+
+**Optional @Input() properties**
+
+Note, these properties (except `id`) react on changes, so you can change them after an input element initializes.
+
+Name | Description
+--- | ---
+id: *string* | Used to connect an input element with `<label>` element.
+label: *string* | An input label text. Used to be shown inside an error message.
+maxlength: *number* \| *string* | Checks if an input value length does't exceed `maxlength` value.
+minlength: *number* \| *string* | Checks if an input value length is more than `minlength` value.
+pattern: *RegExp* | Checks if an input value matches with `pattern`.
+placeholder: *string* | An alias for `label` property. Used to be shown inside an error message.
+required: *boolean* | Checks if an input value is not empty.  
 
 ### **LabelDirective**
 
-Highlights `<label>` element when a bound input is invalid. It is also toggles `g-input_invalid` CSS class when an input status changes.
+Highlights `<label>` element when a bound input is invalid. It is also toggles `ngx-input_invalid` CSS class when an input status changes.
 
-**Selector:** `gLabel` 
+**Selector:** `[ngxLabel]` 
 
-**@Input() properties**
+**Required @Input() properties**
 
-Name | Required | Description
---- | --- | ---
-for: string | Required | An input `name` or `id` value. Used to connect `<label>` element with an input element. 
+Name | Description
+--- | ---
+for: string | An input `name` or `id` value. Used to connect `<label>` element with an input element. 
 
 
 ### **MsgComponent**
 
 Displays a message for an input element depending on it`s validation status. Only one message can be shown at a time.
 
-**Selector:** `g-msg` 
+**Selector:** `ngx-msg` 
 
 **@Input() properties**
 
 Name | Required | Description
 --- | --- | ---
-for: string | Required | An input `name` or `id` value. Used to connect `<g-msg>` component with an input element.
+for: string | Required | An input `name` or `id` value. Used to connect `<ngx-msg>` component with an input element.
 position: 'bottom-left' \| 'bottom-right' | Optional | The position to show the message. Default 'bottom-left'.
 email: string \| MsgFn\* | Optional | An error message for an appropriate validation parameter.
 integer: string \| MsgFn\* | Optional | An error message for an appropriate validation parameter.
-max: string \| ExtendedMsgFn\*\* | Optional | An error message for an appropriate validation parameter. 
-maxlength: string \| ExtendedMsgFn\*\* | Optional | An error message for an appropriate validation parameter.
-min: string \| ExtendedMsgFn\*\* | Optional | An error message for an appropriate validation parameter. 
-minlength: string \| ExtendedMsgFn\*\* | Optional | An error message for an appropriate validation parameter.
+max: string \| MsgFn\* | Optional | An error message for an appropriate validation parameter. 
+maxlength: string \| MsgFn\* | Optional | An error message for an appropriate validation parameter.
+min: string \| MsgFn\* | Optional | An error message for an appropriate validation parameter. 
+minlength: string \| MsgFn\* | Optional | An error message for an appropriate validation parameter.
 pattern: string \| MsgFn\* | Optional | An error message for an appropriate validation parameter.
 required: string \| MsgFn\* | Optional | An error message for an appropriate validation parameter.
 
-> \* A function that returns an error message dynamically, depending on `placeholder` valaue.
+> \* A function that returns an error message dynamically, depending on `label` (or `placeholder`) value.
 >```typescript 
-> type MsgFn = (placeholder: string) => string;
+> type MsgFn = (label: string, validationParamValue?: any) => string;
 >```
 
-> \*\* A function that returns an error message dynamically, depending on `placeholder` and a maximum allowed value.
->```typescript 
-> type ExtendedMsgFn = (placeholder: string, allowedValue: number) => string;
->```
 
 ### **InputMsgConfigService**
 
@@ -161,27 +206,20 @@ Provides configuration for displaying messages.
   
   interface Config {
     colors?: {
-      // color to highlight <g-msg> and <label> elements when an input is invalid
+      // color to highlight <ngx-msg> and <label> elements when an input is invalid
       error?: string;
-      // color to highlight <g-msg> element when max length was reached
+      // color to highlight <ngx-msg> element when max length was reached
       maxlength?: string;
     };
     // Position to show a message
     position?: 'bottom-left' | 'bottom-right';
     // Message texts
     msg?: {
-      email?: string | MsgFn;
-      integer?: string | MsgFn;
-      max?: string | ExtendedMsgFn;
-      min?: string | ExtendedMsgFn;
-      maxlength?: string | ExtendedMsgFn;
-      minlength?: string | ExtendedMsgFn;
-      pattern?: string | MsgFn;
-      required?: string | MsgFn;
+      [validatorName: string]: string | MsgFn;
     };
   }
 ```
-> Tip: set default messages by `set()` method to provide them to all `<g-msg>` components of the application. If a specific message is not provided to `<g-msg>` component, a default message is used instead. You could also use default messages from the box. See the default config below.
+> Tip: set default messages by `set()` method to provide them to all `<ngx-msg>` components of the application. If a specific message is not provided to `<ngx-msg>` component, a default message is used instead. You could also use default messages from the box. See the default config below.
 
 **Default Config**
 
