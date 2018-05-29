@@ -3,7 +3,7 @@ import {
   createMockControl,
   createToBeValidMatcher,
   validateEmptyValue
-} from '../../testing';
+} from '../testing';
 
 describe('NumberValidator', () => {
 
@@ -12,7 +12,12 @@ describe('NumberValidator', () => {
     let validator: NumberValidator;
 
     beforeEach(() => {
-      validator = new NumberValidator([{ name: 'integer' }]);
+      validator = new NumberValidator({
+        integer: {
+          name: 'integer',
+          set: true
+        }
+      });
 
       jasmine.addMatchers(
         createToBeValidMatcher('integer')
@@ -59,10 +64,9 @@ describe('NumberValidator', () => {
     let validator: NumberValidator;
 
     beforeEach(() => {
-      validator = new NumberValidator([{
-        name: 'max',
-        compareWith: 1
-      }]);
+      validator = new NumberValidator({
+        max: { name: 'max', value: 1, set: true }
+      });
 
       jasmine.addMatchers(
         createToBeValidMatcher('max')
@@ -94,10 +98,9 @@ describe('NumberValidator', () => {
     let validator: NumberValidator;
 
     beforeEach(() => {
-      validator = new NumberValidator([{
-        name: 'min',
-        compareWith: 1
-      }]);
+      validator = new NumberValidator({
+        min: { name: 'min', value: 1, set: true }
+      });
 
       jasmine.addMatchers(
         createToBeValidMatcher('min')

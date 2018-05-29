@@ -14,7 +14,7 @@ import { inputMsg } from '../types';
  * depending on it`s validation status.
  */
 @Component({
-  selector: 'g-msg',
+  selector: 'ngx-msg',
   templateUrl: './msg.component.html',
   styleUrls: ['./msg.component.scss'],
   encapsulation: ViewEncapsulation.None,
@@ -35,19 +35,19 @@ import { inputMsg } from '../types';
 export class MsgComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
-   * input id or name
+   * An input id or name attribute
    */
   @Input() public for: string;
   /**
    * Optional params with custom messages
-   * that overwrite the default ones
+   * to overwrite the default ones
    */
   @Input() public email: string | inputMsg.MsgFn;
   @Input() public integer: string | inputMsg.MsgFn;
-  @Input() public max: string | inputMsg.ExtendedMsgFn;
-  @Input() public maxlength: string | inputMsg.ExtendedMsgFn;
-  @Input() public min: string | inputMsg.ExtendedMsgFn;
-  @Input() public minlength: string | inputMsg.ExtendedMsgFn;
+  @Input() public max: string | inputMsg.MsgFn;
+  @Input() public maxlength: string | inputMsg.MsgFn;
+  @Input() public min: string | inputMsg.MsgFn;
+  @Input() public minlength: string | inputMsg.MsgFn;
   @Input() public pattern: string | inputMsg.MsgFn;
   @Input() public position: inputMsg.Position;
   @Input() public required: string | inputMsg.MsgFn;
@@ -58,8 +58,10 @@ export class MsgComponent implements OnInit, OnChanges, OnDestroy {
   private currentStatus: inputMsg.InputStatus;
   private defaultConfig: inputMsg.Config;
   private inputParams: inputMsg.InputParams;
-  // All available messages corresponded
-  // to validation params of the input
+  /**
+   * All available messages corresponded
+   * to validation params of the input
+   */
   private messages: inputMsg.ResultMsg = {};
   private subscriptions: Subscription[] = [];
 
@@ -72,10 +74,10 @@ export class MsgComponent implements OnInit, OnChanges, OnDestroy {
 
     const position: 'bottom-left' | 'bottom-right' = this.position || this.configService.get().position;
     return {
-      'g-msg_pos_bottom-left': position === 'bottom-left',
-      'g-msg_pos_bottom-right': position === 'bottom-right',
-      'g-msg_color_tooltip': this.currentStatus === 'maxlength',
-      'g-msg_material': this.inputParams.material
+      'ngx-msg_pos_bottom-left': position === 'bottom-left',
+      'ngx-msg_pos_bottom-right': position === 'bottom-right',
+      'ngx-msg_color_tooltip': this.currentStatus === 'maxlength',
+      'ngx-msg_material': this.inputParams.material
     };
   }
 
@@ -126,12 +128,12 @@ export class MsgComponent implements OnInit, OnChanges, OnDestroy {
     this.defaultConfig = this.configService.get();
 
     if (!this.for) {
-      throw new Error('gMsg component: \'for\' parameter with the input id or name must be provided.');
+      throw new Error('ngxMsg component: \'for\' parameter with the input id or name must be provided.');
     }
 
     this.inputParams = this.storageService.get(this.for);
     if (!this.inputParams) {
-      throw new Error(`gMsg component: can\'t find the input element with id or name: ${this.for}`);
+      throw new Error(`ngxMsg component: can\'t find the input element with id or name: ${this.for}`);
     }
 
     // Set default or custom messages for given validation params
@@ -159,8 +161,8 @@ export class MsgComponent implements OnInit, OnChanges, OnDestroy {
 
     // update current msg if the input is invalid
     if (this.currentStatus === 'pristine' ||
-        this.currentStatus === 'valid' ||
-        this.currentStatus === 'maxlength') {
+      this.currentStatus === 'valid' ||
+      this.currentStatus === 'maxlength') {
       return;
     }
     this.currentMsg = this.messages[this.currentStatus];
@@ -197,41 +199,28 @@ export class MsgComponent implements OnInit, OnChanges, OnDestroy {
   // throgh @Input() binding - the default one is used instead.
   private setMessage(name: inputMsg.ValidatorName): void {
 
-    if (typeof this.inputParams.validationParams[name] === 'undefined') {
+    if (!this.inputParams.validationParams[name]) {
       return;
     }
 
     // helper type guard
-    const isFn = (arg: any): arg is inputMsg.MsgFn | inputMsg.ExtendedMsgFn => {
+    const isFn = (arg: string | Function): arg is inputMsg.MsgFn => {
       return typeof arg === 'function';
     };
 
-    // validation params with inputMsg.MsgFn type support
-    const msgFnSupport = ['email', 'integer', 'required', 'pattern'];
-
-    // set a message generated from MsgFn() or as a simle string
-    if (msgFnSupport.indexOf(name) !== -1) {
-      let msgExpression: inputMsg.MsgFn | string;
-      if (typeof this[name] !== 'undefined') {
-        msgExpression = this[name] as inputMsg.MsgFn | string;
-      } else {
-        msgExpression = this.defaultConfig.msg[name] as inputMsg.MsgFn | string;
-      }
-      this.messages[name] = isFn(msgExpression) ? msgExpression(this.inputParams.label) : msgExpression;
-      return;
-    }
-
-    // Otherwise - set a message generated from ExtendedMsgFn() or as a simle string
-    let extendedMsgExpression: inputMsg.ExtendedMsgFn | string;
+    // get specific or default msgExpression
+    let msgExpression: inputMsg.MsgFn | string;
     if (typeof this[name] !== 'undefined') {
-      extendedMsgExpression = this[name] as inputMsg.ExtendedMsgFn | string;
+      msgExpression = this[name] as inputMsg.MsgFn | string;
     } else {
-      extendedMsgExpression = this.defaultConfig.msg[name] as inputMsg.ExtendedMsgFn | string;
+      msgExpression = this.defaultConfig.msg[name] as inputMsg.MsgFn | string;
     }
-    if (isFn(extendedMsgExpression)) {
-      this.messages[name] = extendedMsgExpression(this.inputParams.label, this.inputParams.validationParams[name] as number);
+
+    // Set a message generated by MsgFn() or as a simle string
+    if (isFn(msgExpression)) {
+      this.messages[name] = msgExpression(this.inputParams.label, this.inputParams.validationParams[name].value);
     } else {
-      this.messages[name] = extendedMsgExpression;
+      this.messages[name] = msgExpression;
     }
 
   }

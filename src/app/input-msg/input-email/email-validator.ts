@@ -1,8 +1,8 @@
 import { AbstractControl } from '@angular/forms';
 
-import { InputValidator } from './input-validator';
+import { InputValidator } from '../models/input-validator';
 
-import { inputMsg } from '../../types';
+import { inputMsg } from '../types';
 
 export class EmailValidator extends InputValidator {
 
@@ -12,7 +12,7 @@ export class EmailValidator extends InputValidator {
   protected validatorSequence = ['required', 'email'];
 
   constructor(
-    private validatorsToApply: { [key: string]: inputMsg.ValidatorConfig<void> }
+    private validatorsToApply: { [key: string]: inputMsg.ValidatorParam }
   ) {
     super();
     super.setCurrentValidators(validatorsToApply);

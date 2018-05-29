@@ -4,8 +4,6 @@ import { Subject } from 'rxjs/Subject';
 
 export declare module inputMsg {
 
-  type AggregatedInputType = 'email' | 'number' | 'textLike';
-
   interface Config {
     colors?: {
       error?: string;
@@ -13,18 +11,9 @@ export declare module inputMsg {
     };
     position?: Position;
     msg?: {
-      email?: string | MsgFn;
-      integer?: string | MsgFn;
-      max?: string | ExtendedMsgFn;
-      min?: string | ExtendedMsgFn;
-      maxlength?: string | ExtendedMsgFn;
-      minlength?: string | ExtendedMsgFn;
-      pattern?: string | MsgFn;
-      required?: string | MsgFn;
+      [validatorName: string]: string | MsgFn;
     };
   }
-
-  type ExtendedMsgFn = (placeholder: string, allowedValue: number) => string;
 
   interface InputParams {
     label?: string;
@@ -34,14 +23,7 @@ export declare module inputMsg {
     status: BehaviorSubject<InputStatus>;
     valid: BehaviorSubject<boolean>;
     validationParams: {
-      email?: boolean;
-      integer?: boolean;
-      max?: number;
-      maxlength?: number;
-      min?: number;
-      minlength?: number;
-      pattern?: boolean;
-      required?: boolean;
+      [valiadatorName: string]: ValidatorParam;
     };
   }
 
@@ -51,41 +33,40 @@ export declare module inputMsg {
     validate(control: AbstractControl): { [validatorName: string]: any } | null;
   }
 
-  type MsgFn = (placeholder: string) => string;
+  interface InputValidatorFactory {
+    create(validatorsToApply: { [key: string]: inputMsg.ValidatorParam }): InputValidator;
+  }
+
+  type MsgFn = (placeholder: string, validationParam: any) => string;
 
   type Position = 'bottom-left' | 'bottom-right';
 
   // Final messages to show
   interface ResultMsg {
-    email?: string;
-    integer?: string;
-    max?: string;
-    maxlength?: string;
-    min?: string;
-    minlength?: string;
-    pattern?: string;
-    required?: string;
+    [validatorName: string]: string;
   }
 
-  type SupportedInputType = 'email' | 'text' | 'password' | 'number';
-
-  interface Validator<T> {
-    validate: ValidatorFn<T>;
-    compareWith?: T;
+  interface ValidatorConfig<T> extends ValidatorParam {
+    fn: ValidatorFn<T>;
   }
 
-  interface ValidatorConfig<T> {
+  /**
+   * The function to check an input value with.
+   */
+  type ValidatorFn<T> = (controlValue: string | number, compareWith?: T) => { [validatorName: string]: T } | null;
+
+  /**
+   * Validator name, like: 'required', 'email', 'min', 'max' etc.
+   */
+  type ValidatorName = string;
+
+  interface ValidatorParam {
     name: ValidatorName;
-    compareWith?: T; // number | RegExp | undefined
+    // the value to pass to ValidatorFn as compareWith paramteter
+    value?: any;
+    set: boolean;
   }
 
-  type ValidatorFn<T> = (value: string | number, compareWith?: T) => { [validatorName: string]: T } | null;
-
-  type ValidatorName = 'email' | 'integer' | 'max' | 'maxlength' | 'min' | 'minlength' | 'pattern' | 'required';
-
-  interface ValidationParamOption {
-    name: ValidatorName;
-    type: 'boolean' | 'number' | 'RegExp' | 'default';
-  }
+  type ValidatorParamFn = () => ValidatorParam;
 
 }

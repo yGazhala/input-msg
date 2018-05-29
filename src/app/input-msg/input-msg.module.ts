@@ -5,9 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { InputMsgConfigService } from './input-msg-config.service';
 import { InputStorageService } from './input-storage.service';
 
-import { InputDirective } from './input/input.directive';
+import { InputEmailDirective } from './input-email/input-email.directive';
+import { InputNumberDirective } from './input-number/input-number.directive';
+import { InputTextDirective } from './input-text/input-text.directive';
 import { LabelDirective } from './label/label.directive';
 import { MsgComponent } from './msg/msg.component';
+
 
 @NgModule({
   imports: [
@@ -15,7 +18,9 @@ import { MsgComponent } from './msg/msg.component';
     FormsModule
   ],
   declarations: [
-    InputDirective,
+    InputEmailDirective,
+    InputNumberDirective,
+    InputTextDirective,
     LabelDirective,
     MsgComponent
   ],
@@ -24,7 +29,9 @@ import { MsgComponent } from './msg/msg.component';
     InputStorageService
   ],
   exports: [
-    InputDirective,
+    InputEmailDirective,
+    InputNumberDirective,
+    InputTextDirective,
     LabelDirective,
     MsgComponent
   ]

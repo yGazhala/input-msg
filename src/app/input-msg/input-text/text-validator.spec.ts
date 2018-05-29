@@ -3,7 +3,7 @@ import {
   createMockControl,
   createToBeValidMatcher,
   validateEmptyValue
-} from '../../testing';
+} from '../testing';
 
 describe('TextValidator', () => {
 
@@ -12,10 +12,13 @@ describe('TextValidator', () => {
     let validator: TextValidator;
 
     beforeEach(() => {
-      validator = new TextValidator([{
-        name: 'maxlength',
-        compareWith: 5
-      }]);
+      validator = new TextValidator({
+        maxlength: {
+          name: 'maxlength',
+          value: 5,
+          set: true
+        }
+      });
 
       jasmine.addMatchers(
         createToBeValidMatcher('maxlength')
@@ -55,10 +58,13 @@ describe('TextValidator', () => {
     let validator: TextValidator;
 
     beforeEach(() => {
-      validator = new TextValidator([{
-        name: 'minlength',
-        compareWith: 5
-      }]);
+      validator = new TextValidator({
+        minlength: {
+          name: 'minlength',
+          value: 5,
+          set: true
+        }
+      });
 
       jasmine.addMatchers(
         createToBeValidMatcher('minlength')
@@ -100,10 +106,13 @@ describe('TextValidator', () => {
     let validator: TextValidator;
 
     beforeEach(() => {
-      validator = new TextValidator([{
-        name: 'pattern',
-        compareWith: /(?=.*\d)(?=.*[a-z])/i
-      }]);
+      validator = new TextValidator({
+        pattern: {
+          name: 'pattern',
+          value: /(?=.*\d)(?=.*[a-z])/i,
+          set: true
+        }
+      });
 
       jasmine.addMatchers(
         createToBeValidMatcher('pattern')

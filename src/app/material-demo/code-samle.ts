@@ -14,13 +14,12 @@ let template = `
       </p>
 
       <mat-form-field>
-        <input type="text"
-               matInput
+        <input matInput
                name="userName"
                placeholder="Name"
                [(ngModel)]="data.name"
                #nameModel="ngModel"
-               gInput
+               ngxInputText
                [model]="nameModel"
                required
                minlength="2"
@@ -28,7 +27,7 @@ let template = `
           >
       </mat-form-field>
 
-      <g-msg for="userName"></g-msg>
+      <ngx-msg for="userName"></ngx-msg>
 
     </div>
 
@@ -39,19 +38,18 @@ let template = `
       </p>
 
       <mat-form-field>
-        <input type="email"
-               matInput
+        <input matInput
                name="email"
                placeholder="Email"
                [(ngModel)]="data.email"
                #emailModel="ngModel"
-               gInput
+               ngxInputEmail
                [model]="emailModel"
                required
           >
       </mat-form-field>
 
-      <g-msg for="email"></g-msg>
+      <ngx-msg for="email"></ngx-msg>
 
     </div>
 
@@ -68,7 +66,7 @@ let template = `
                [(ngModel)]="data.password"
                name="password"
                #passwordModel="ngModel"
-               gInput
+               ngxInputText
                [model]="passwordModel"
                required
                minlength="6"
@@ -76,7 +74,7 @@ let template = `
           >
       </mat-form-field>
 
-      <g-msg for="password" [pattern]="weakPasswordMsg"></g-msg>
+      <ngx-msg for="password" [pattern]="weakPasswordMsg"></ngx-msg>
 
     </div>
 
@@ -93,7 +91,7 @@ let template = `
                placeholder="Quantity"
                [(ngModel)]="data.quantity"
                #quantityModel="ngModel"
-               gInput
+               ngxInputNumber
                [model]="quantityModel"
                required
                integer
@@ -101,7 +99,7 @@ let template = `
           >
       </mat-form-field>
 
-      <g-msg for="quantity"></g-msg>
+      <ngx-msg for="quantity"></ngx-msg>
 
     </div>
 
@@ -116,7 +114,7 @@ let template = `
                   matInput
                   name="comment"
                   placeholder="Comment"
-                  gInput
+                  ngxInputText
                   [(ngModel)]="data.comment"
                   #commentModel="ngModel"
                   [model]="commentModel"
@@ -126,7 +124,7 @@ let template = `
         </textarea>
       </mat-form-field>
 
-      <g-msg for="comment"></g-msg>
+      <ngx-msg for="comment"></ngx-msg>
 
     </div>
 
@@ -154,7 +152,7 @@ export const demoComponent = `
       import { NgForm } from '@angular/forms';
 
       @Component({
-        selector: 'g-demo',
+        selector: 'ngx-demo',
         templateUrl: './demo.component.html',
         styleUrls: ['./demo.component.scss']
       })

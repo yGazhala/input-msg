@@ -28,7 +28,7 @@
   border-radius: 4px;
   outline: none;
   transition: border-color 250ms ease-in;
-  &.g-input_invalid {
+  &.ngx-input_invalid {
     border-color: #f44336;
   }
 }

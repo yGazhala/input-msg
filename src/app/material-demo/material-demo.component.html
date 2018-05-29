@@ -9,8 +9,8 @@
     </p>
     
     <mat-form-field>
-      <input type="text" 
-             gInput matInput 
+      <input ngxInputText 
+             matInput 
              placeholder="Name"
              [(ngModel)]="data.name" 
              name="userName"
@@ -21,7 +21,7 @@
              maxlength="10"
         >
     </mat-form-field>
-    <g-msg for="userName"></g-msg>
+    <ngx-msg for="userName"></ngx-msg>
   </div>
   
   <div class="form-field-wrap">
@@ -31,8 +31,8 @@
     </p>
 
     <mat-form-field>
-      <input type="email" 
-             gInput matInput 
+      <input ngxInputEmail 
+             matInput 
              placeholder="Email"
              name="email"
              [(ngModel)]="data.email" 
@@ -41,7 +41,7 @@
              required
         >
     </mat-form-field>
-    <g-msg for="email"></g-msg>
+    <ngx-msg for="email"></ngx-msg>
   </div>
 
   <div class="form-field-wrap">
@@ -52,7 +52,8 @@
     
     <mat-form-field>
       <input type="password"  
-             gInput matInput 
+             ngxInputText 
+             matInput 
              placeholder="Password"
              [(ngModel)]="data.password" 
              name="password"
@@ -63,7 +64,7 @@
              [pattern]="passwordRegExp"
         >
     </mat-form-field>
-    <g-msg for="password" [pattern]="weakPasswordMsg"></g-msg>
+    <ngx-msg for="password" [pattern]="weakPasswordMsg"></ngx-msg>
   </div>
   
   <div class="form-field-wrap">
@@ -74,7 +75,8 @@
     
     <mat-form-field>
       <input type="number" 
-             gInput matInput
+             ngxInputNumber 
+             matInput
              name="quantity"
              placeholder="Quantity"
              [(ngModel)]="data.quantity" 
@@ -85,7 +87,7 @@
         >
     </mat-form-field>
 
-    <g-msg for="quantity"></g-msg>
+    <ngx-msg for="quantity"></ngx-msg>
 
   </div>
 
@@ -97,7 +99,8 @@
 
     <mat-form-field>
       <textarea rows="1" 
-              matInput gInput
+              matInput 
+              ngxInputText
               name="comment"
               placeholder="Comment"
               [(ngModel)]="data.comment" 
@@ -109,7 +112,7 @@
       </textarea>
     </mat-form-field>
     
-    <g-msg for="comment"></g-msg>
+    <ngx-msg for="comment"></ngx-msg>
 
   </div>
 

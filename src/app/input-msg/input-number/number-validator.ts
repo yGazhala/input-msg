@@ -1,8 +1,8 @@
 import { AbstractControl } from '@angular/forms';
 
-import { InputValidator } from './input-validator';
+import { InputValidator } from '../models/input-validator';
 
-import { inputMsg } from '../../types';
+import { inputMsg } from '../types';
 
 export class NumberValidator extends InputValidator {
 
@@ -14,7 +14,7 @@ export class NumberValidator extends InputValidator {
   protected validatorSequence = ['required', 'integer', 'min', 'max'];
 
   constructor(
-    private validatorsToApply: { [key: string]: inputMsg.ValidatorConfig<void | number> }
+    private validatorsToApply: { [key: string]: inputMsg.ValidatorParam }
   ) {
     super();
     super.setCurrentValidators(validatorsToApply);

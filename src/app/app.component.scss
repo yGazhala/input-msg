@@ -18,15 +18,9 @@
   color: rgba(0,0,0,.87);
   opacity: 0.6;
   text-decoration: none;
-  transition: all 250ms ease-out;
   &:hover {
     color: #3f51b5;
     opacity: 1;
     text-decoration: underline;
   }
-}
-.github-icon {
-  width: 20px;
-  height: 20px;
-  margin-right: 5px;
 }

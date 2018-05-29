@@ -1,8 +1,8 @@
 import { AbstractControl } from '@angular/forms';
 
-import { InputValidator } from './input-validator';
+import { InputValidator } from '../models/input-validator';
 
-import { inputMsg } from '../../types';
+import { inputMsg } from '../types';
 
 /**
  * Validates 'text' like input element.
@@ -24,7 +24,7 @@ export class TextValidator extends InputValidator {
   protected validatorSequence = ['required', 'minlength', 'maxlength', 'pattern'];
 
   constructor(
-    private validatorsToApply: { [key: string]: inputMsg.ValidatorConfig<void | number | RegExp> }
+    private validatorsToApply: { [key: string]: inputMsg.ValidatorParam }
   ) {
     super();
     super.setCurrentValidators(validatorsToApply);

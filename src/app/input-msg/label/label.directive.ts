@@ -8,11 +8,11 @@ import { InputStorageService } from '../input-storage.service';
 import { inputMsg } from '../types';
 
 /**
- * Adds/removes 'g-input_invalid' css class
+ * Adds/removes 'ngx-input_invalid' css class
  * when input status changes
  */
 @Directive({
-  selector: '[gLabel]'
+  selector: '[ngxLabel]'
 })
 export class LabelDirective implements OnInit, OnDestroy {
 
@@ -43,7 +43,7 @@ export class LabelDirective implements OnInit, OnDestroy {
     this.highlightColor = this.configService.get().colors.error;
 
     if (!this.for) {
-      throw new Error('gLabel directive: \'for\' attribute with input id or name is required.');
+      throw new Error('ngxLabel directive: \'for\' attribute with input id or name is required.');
     }
 
     this.setAnimation();
@@ -54,7 +54,7 @@ export class LabelDirective implements OnInit, OnDestroy {
     setTimeout(() => {
       const inputParams = this.inputStorageService.get(this.for);
       if (!inputParams) {
-        throw new Error(`gLabel directive: can\'t find the input element with id or name: ${this.for}`);
+        throw new Error(`ngxLabel directive: can\'t find the input element with id or name: ${this.for}`);
       }
 
       this.valid = inputParams.valid;
@@ -80,9 +80,9 @@ export class LabelDirective implements OnInit, OnDestroy {
 
   private toggleClassOnValidChange(valid: boolean): void {
     if (valid) {
-      this.elem.classList.remove('g-input_invalid');
+      this.elem.classList.remove('ngx-input_invalid');
     } else {
-      this.elem.classList.add('g-input_invalid');
+      this.elem.classList.add('ngx-input_invalid');
     }
   }
 
