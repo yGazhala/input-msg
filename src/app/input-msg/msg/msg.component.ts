@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChange, ViewEncapsulation } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 
 import { InputMsgConfigService } from '../input-msg-config.service';
 import { InputStorageService } from '../input-storage.service';

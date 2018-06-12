@@ -1,6 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 export declare module inputMsg {
 

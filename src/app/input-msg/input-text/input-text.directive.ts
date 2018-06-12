@@ -1,14 +1,11 @@
 import { Directive, ElementRef, Input, OnInit, OnChanges, OnDestroy, SimpleChange } from '@angular/core';
-import { NG_VALIDATORS, NgModel } from '@angular/forms';
+import { NG_VALIDATORS } from '@angular/forms';
 
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 
 import { AbstractInput } from '../models/abstract-input';
 import { InputStorageService } from '../input-storage.service';
 import { TextValidatorFactory } from './text-validator-factory.service';
-
-// types
-import { inputMsg } from '../types';
 
 @Directive({
   selector: 'input[ngxInputText], textarea[ngxInputText]',

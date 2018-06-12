@@ -1,6 +1,6 @@
 import { Directive, Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
 
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
 
 import { InputMsgConfigService } from '../input-msg-config.service';
 import { InputStorageService } from '../input-storage.service';

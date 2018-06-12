@@ -1,11 +1,7 @@
 import { ElementRef, Input, OnInit, OnChanges, OnDestroy, SimpleChange } from '@angular/core';
 import { AbstractControl, NgModel, NgForm } from '@angular/forms';
 
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
-import { Subscription } from 'rxjs/Subscription';
-import 'rxjs/add/observable/fromEvent';
+import { BehaviorSubject, Observable, Subject, Subscription, fromEvent } from 'rxjs';
 
 import { InputStorageService } from '../input-storage.service';
 
@@ -262,8 +258,7 @@ export abstract class AbstractInput implements OnInit, OnChanges, OnDestroy {
       }
     };
 
-    const blurSub: Subscription = Observable
-      .fromEvent(this.elem, 'blur')
+    const blurSub: Subscription = fromEvent(this.elem, 'blur')
       .subscribe(emitErrorStatusOnTouched);
     this.statusSubscriptions.push(blurSub);
 
