@@ -1,11 +1,12 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 import { MatButtonModule, MatInputModule, MatTabsModule } from '@angular/material';
+
+import { InputMsgModule } from 'ngx-input-msg';
 
 /**
  * Highlights code snippets in html
@@ -14,7 +15,6 @@ import { MatButtonModule, MatInputModule, MatTabsModule } from '@angular/materia
 import { HighlightJsModule } from 'angular2-highlight-js';
 
 import { AppRoutingModule } from './app-routing.module';
-import { InputMsgModule } from './input-msg/input-msg.module';
 
 import { AppComponent } from './app.component';
 import { CustomDemoComponent } from './custom-demo/custom-demo.component';
@@ -24,7 +24,6 @@ import { MaterialDemoComponent } from './material-demo/material-demo.component';
 
 @NgModule({
   imports: [
-    BrowserAnimationsModule,
     BrowserModule,
     CommonModule,
     FormsModule,

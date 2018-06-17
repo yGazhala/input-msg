@@ -1,0 +1,22 @@
+{
+  "name": "ngx-input-msg",
+  "version": "1.0.0",
+  "author": {
+    "name": "Yuri Gazhala",
+    "email": "yuriy.gazhala@gmail.com" 
+  },
+  "description": "Provides form input live validation for Angular 5+ projects",
+  "keywords": ["angular", "forms", "validation", "messages", "input"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yGazhala/input-msg.git"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "@angular/common": "^5.0.0 || ^6.0.0-rc.0 || ^6.0.0",
+    "@angular/core": "^5.0.0 || ^6.0.0-rc.0 || ^6.0.0",
+    "@angular/forms": "^5.0.0 || ^6.0.0-rc.0 || ^6.0.0",
+    "@angular/platform-browser": "^5.0.0 || ^6.0.0-rc.0 || ^6.0.0",
+    "rxjs": "^6.0.0"
+  }
+}

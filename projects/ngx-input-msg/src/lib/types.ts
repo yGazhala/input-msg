@@ -1,5 +1,12 @@
+/**
+ * Note, we keep this declaration file with '.ts' instead
+ * of '.d.ts' extension to handle CLI relative path issue,
+ * that happens during ng build proccess.
+ */
+
 import { AbstractControl } from '@angular/forms';
 import { BehaviorSubject, Subject } from 'rxjs';
+
 
 export declare module inputMsg {
 

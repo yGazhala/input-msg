@@ -1,7 +1,7 @@
 import { ElementRef, Input, OnInit, OnChanges, OnDestroy, SimpleChange } from '@angular/core';
 import { AbstractControl, NgModel, NgForm } from '@angular/forms';
 
-import { BehaviorSubject, Observable, Subject, Subscription, fromEvent } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription, fromEvent } from 'rxjs';
 
 import { InputStorageService } from '../input-storage.service';
 

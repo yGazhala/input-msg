@@ -1,5 +1,3 @@
-import { AbstractControl } from '@angular/forms';
-
 import { InputValidator } from '../models/input-validator';
 
 import { inputMsg } from '../types';

@@ -1,6 +1,6 @@
-# NgxInputMsg
+# ngx-input-msg
 
-Provides live form input validation for Angular 2+ projects. [Demo](https://ygazhala.github.io/input-msg)
+Provides form input live validation for Angular 5+ projects. [Demo](https://ygazhala.github.io/input-msg)
 
 This project is inspired by AngularJS ng-messages module.
 
@@ -8,7 +8,7 @@ This project is inspired by AngularJS ng-messages module.
 
 - Integrated with Angular template driven forms.
 
-- Easy to add validation through HTML, keeps a component clear from additional form control initializations.
+- Minifies boilerplate code, easy to add error messages to form inputs.
 
 - Supports HTML5 like validation syntax (required, min, max, minlength, maxlength, pattern). It is also provides email and integer validators.
 
@@ -18,14 +18,13 @@ This project is inspired by AngularJS ng-messages module.
 
 ## Get started
 
-1. Copy `./src/app/input-msg` folder to your project.
+1. Install Module to your Angular project via: `npm install ngx-input-msg --save`.
 
-2. Import `InputMsgModule` to your feature module. Note, `InputMsgModule` depends on `BrowserAnimationsModule`, so `BrowserAnimationsModule` should be imported to `app.module.ts`.
+2. Import `InputMsgModule` to your feature module.
 
 ```typescript
-// feature.module.ts example
 import { NgModule } from '@angular/core';
-import { InputMsgModule } from 'app/src/input-msg/input-msg.module';
+import { InputMsgModule } from 'ngx-input-msg';
 
 @NgModule({
   imports: [
@@ -35,121 +34,67 @@ import { InputMsgModule } from 'app/src/input-msg/input-msg.module';
   providers: []
 })
 export class FeatureModule { }
-
-
-// app.module.ts example
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
-
-import { FeatureModule } from 'app/src/feature-module/feature.module.ts'
-
-import { AppComponent } from './app.component';
-
-@NgModule({
-  imports: [
-    BrowserAnimationsModule,
-    BrowserModule,
-    FeatureModule
-  ],
-  declarations: [
-    AppComponent
-  ],
-  providers: [],
-  bootstrap: [ AppComponent ]
-})
-export class AppModule { }
 ```
 
 3. Provide [Angular Material](https://material.angular.io/) to the app, if you are going to use Material style inputs.
 
-4. Inside a `<form>` element, add `ngxInputText` directive to an input element, then append `<ngx-msg>` component to show error messages. See [Demo](https://ygazhala.github.io/input-msg)
+4. Inside a `<form>`, add `ngxInputText` directive to an `<input>` element, then append `<ngx-msg>` component to show error messages. See [Demo](https://ygazhala.github.io/input-msg)
 
 ## API Reference
 
-### **InputEmailDirective**
+### **AbstractInput**
 
-Directive to validate an `<input>` or `<input type="email">` element as an email address. It is also toggles `ngx-input_invalid` CSS class when an input status changes.
+This base class describes common properties and methods for all input directives. Each input directive extends AbstractInput to provide its specific validation parameters and behaviors.
+
+**@Input() properties**
+
+Name | Required | Reacts on changes\* | Description
+--- | --- | --- | ---
+id: *string* | Optional | no | Used to connect an input element with `<label>` element.
+label: *string* | Optional | yes | An input label text.
+model: *NgModel* | Required | no | An input NgModel instance.
+name: *string* | Required | no |  An input name attribute.
+placeholder: *string* | Optional | yes | An alias for `label` property. Used to be shown inside an error message.
+required: *boolean* | Optional | yes | Checks if an input value is not empty.
+
+> \* Whether an @Input argument could be changed after the directive has been initialized.
+
+AbstractInput also toggles `ngx-input_invalid` CSS class when an input status changes.
+
+
+### **InputEmailDirective extends AbstractInput**
+
+Directive to validate an `<input>` or `<input type="email">` element as an email address.
 
 **Selector:** `[ngxInputEmail]`
 
-**Required @Input() properties**
+### **InputNumberDirective extends AbstractInput**
 
-Note, these properties have not to be changed after an input element initializes.
-
-Name | Description
---- | ---
-model: *NgModel* | An input NgModel instance.
-name: *string* |  An input name attribute.
-
-**Optional @Input() properties**
-
-Note, these properties (except `id`) react on changes, so you can change them after an input element initializes.
-
-Name | Description
---- | ---
-id: *string* | Used to connect an input element with `<label>` element.
-label: *string* | An input label text.
-placeholder: *string* | An alias for `label` property. Used to be shown inside an error message.
-required: *boolean* | Checks if an input value is not empty.
-
-### **InputNumberDirective**
-
-Directive to validate an `<input type="number">` element. It is also toggles `ngx-input_invalid` CSS class when an input status changes.
+Directive to validate an `<input type="number">` element.
 
 **Selector:** `[ngxInputNumber][type="number"]` 
 
-**Required @Input() properties**
+**Optional @Input() properties**
 
-Note, these properties have not to be changed after an input element initializes.
+Name | Reacts on changes | Description
+--- | --- | ---
+integer: *boolean* | yes | Checks if an input value is an integer.
+max: *number* \| *string* | yes | Checks if an input value does not exceed `max` value.
+min: *number* \| *string* | yes | Checks if an input value is not less than `min` value.
 
-Name | Description
---- | ---
-model: *NgModel* | An input NgModel instance.
-name: *string* |  An input name attribute.
+### **InputTextDirective extends AbstractInput**
+
+Directive to validate text like `<input>` or `<textarea>` elements.
+
+**Selector:** `input[ngxInputText], textarea[ngxInputText]`
 
 **Optional @Input() properties**
 
-Note, these properties (except `id`) react on changes, so you can change them after an input element initializes.
-
-Name | Description
---- | ---
-id: *string* | Used to connect an input element with `<label>` element.
-integer: *boolean* | Checks if an input value is an integer.
-label: *string* | An input label text.
-max: *number* \| *string* | Checks if an input value does not exceed `max` value.
-min: *number* \| *string* | Checks if an input value is not less than `min` value.
-placeholder: *string* | An alias for `label` property. Used to be shown inside an error message.
-required: *boolean* | Checks if an input value is not empty.
-
-### **InputTextDirective**
-
-Directive to validate text like `<input>` or `<textarea>` elements. It is also toggles `ngx-input_invalid` CSS class when an input status changes.
-
-**Selector:** `input[ngxInputText], textarea[ngxInputText]` 
-
-**Required @Input() properties**
-
-Note, these properties have not to be changed after an input element initializes.
-
-Name | Description
---- | ---
-model: *NgModel* | An input NgModel instance.
-name: *string* |  An input name attribute.
-
-**Optional @Input() properties**
-
-Note, these properties (except `id`) react on changes, so you can change them after an input element initializes.
-
-Name | Description
---- | ---
-id: *string* | Used to connect an input element with `<label>` element.
-label: *string* | An input label text. Used to be shown inside an error message.
-maxlength: *number* \| *string* | Checks if an input value length does't exceed `maxlength` value.
-minlength: *number* \| *string* | Checks if an input value length is more than `minlength` value.
-pattern: *RegExp* | Checks if an input value matches with `pattern`.
-placeholder: *string* | An alias for `label` property. Used to be shown inside an error message.
-required: *boolean* | Checks if an input value is not empty.  
+Name | Reacts on changes | Description
+--- | --- | ---
+maxlength: *number* \| *string* | yes | Checks if an input value length does't exceed `maxlength` value.
+minlength: *number* \| *string* | yes | Checks if an input value length is more than `minlength` value.
+pattern: *RegExp* | yes | Checks if an input value matches with `pattern`.  
 
 ### **LabelDirective**
 
@@ -159,9 +104,9 @@ Highlights `<label>` element when a bound input is invalid. It is also toggles `
 
 **Required @Input() properties**
 
-Name | Description
---- | ---
-for: string | An input `name` or `id` value. Used to connect `<label>` element with an input element. 
+Name | Reacts on changes | Description
+--- | --- | ---
+for: string | no | An input `name` or `id` value. Used to connect `<label>` element with an input element. 
 
 
 ### **MsgComponent**
@@ -172,18 +117,18 @@ Displays a message for an input element depending on it`s validation status. Onl
 
 **@Input() properties**
 
-Name | Required | Description
---- | --- | ---
-for: string | Required | An input `name` or `id` value. Used to connect `<ngx-msg>` component with an input element.
-position: 'bottom-left' \| 'bottom-right' | Optional | The position to show the message. Default 'bottom-left'.
-email: string \| MsgFn\* | Optional | An error message for an appropriate validation parameter.
-integer: string \| MsgFn\* | Optional | An error message for an appropriate validation parameter.
-max: string \| MsgFn\* | Optional | An error message for an appropriate validation parameter. 
-maxlength: string \| MsgFn\* | Optional | An error message for an appropriate validation parameter.
-min: string \| MsgFn\* | Optional | An error message for an appropriate validation parameter. 
-minlength: string \| MsgFn\* | Optional | An error message for an appropriate validation parameter.
-pattern: string \| MsgFn\* | Optional | An error message for an appropriate validation parameter.
-required: string \| MsgFn\* | Optional | An error message for an appropriate validation parameter.
+Name | Required | Reacts on changes | Description
+--- | --- | --- | ---
+for: string | Required | no | An input `name` or `id` value. Used to connect `<ngx-msg>` component with an input element.
+position: 'bottom-left' \| 'bottom-right' | Optional | yes | The position to show the message. Default 'bottom-left'.
+email: string \| MsgFn\* | Optional | yes | An error message for an appropriate validation parameter.
+integer: string \| MsgFn\* | Optional | yes | An error message for an appropriate validation parameter.
+max: string \| MsgFn\* | Optional | yes | An error message for an appropriate validation parameter. 
+maxlength: string \| MsgFn\* | Optional | yes | An error message for an appropriate validation parameter.
+min: string \| MsgFn\* | Optional | yes | An error message for an appropriate validation parameter. 
+minlength: string \| MsgFn\* | Optional | yes | An error message for an appropriate validation parameter.
+pattern: string \| MsgFn\* | Optional | yes | An error message for an appropriate validation parameter.
+required: string \| MsgFn\* | Optional | yes | An error message for an appropriate validation parameter.
 
 > \* A function that returns an error message dynamically, depending on `label` (or `placeholder`) value.
 >```typescript 

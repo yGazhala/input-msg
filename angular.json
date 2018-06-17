@@ -121,6 +121,46 @@
           }
         }
       }
+    },
+    "ngx-input-msg": {
+      "root": "projects/ngx-input-msg",
+      "sourceRoot": "projects/ngx-input-msg/src",
+      "projectType": "library",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/ngx-input-msg/tsconfig.lib.json",
+            "project": "projects/ngx-input-msg/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "project": "projects/ngx-input-msg/ng-package.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ngx-input-msg/src/test.ts",
+            "tsConfig": "projects/ngx-input-msg/tsconfig.spec.json",
+            "karmaConfig": "projects/ngx-input-msg/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/ngx-input-msg/tsconfig.lib.json",
+              "projects/ngx-input-msg/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "input-msg"
