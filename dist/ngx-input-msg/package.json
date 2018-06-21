@@ -25,5 +25,18 @@
     "@angular/forms": "^5.0.0 || ^6.0.0-rc.0 || ^6.0.0",
     "@angular/platform-browser": "^5.0.0 || ^6.0.0-rc.0 || ^6.0.0",
     "rxjs": "^5.5.0 || ^6.0.0"
+  },
+  "main": "bundles/ngx-input-msg.umd.js",
+  "module": "fesm5/ngx-input-msg.js",
+  "es2015": "fesm2015/ngx-input-msg.js",
+  "esm5": "esm5/ngx-input-msg.js",
+  "esm2015": "esm2015/ngx-input-msg.js",
+  "fesm5": "fesm5/ngx-input-msg.js",
+  "fesm2015": "fesm2015/ngx-input-msg.js",
+  "typings": "ngx-input-msg.d.ts",
+  "metadata": "ngx-input-msg.metadata.json",
+  "sideEffects": false,
+  "dependencies": {
+    "tslib": "^1.9.0"
   }
 }
